@@ -12,6 +12,17 @@ db.once('open', () => console.log('Connected to Database'))
 app.use(express.json())
 
 const usersRouter = require('./routes/users')
+const schoolsRouter = require('./routes/schools')
 app.use('/users', usersRouter)
+app.use('/schools', schoolsRouter)
 
 app.listen('4000', () => console.log('Server started'))
+
+const Schools = require('./models/school')
+
+/*run()
+async function run() {
+    const newSchool = new Schools({ name: 'Jaclupan ES' })
+    await newSchool.save();
+    console.log(newSchool)
+}*/
