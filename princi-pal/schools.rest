@@ -1,0 +1,17 @@
+GET http://localhost:4000/schools
+
+###
+POST http://localhost:4000/schools
+Content-Type: application/json
+
+{
+    "name": "Testing ES"
+}
+
+###
+DELETE http://localhost:4000/schools
+Content-Type: application/json
+
+{
+    "name": "Testing ES"
+}

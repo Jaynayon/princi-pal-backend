@@ -1,3 +1,8 @@
+GET http://localhost:4000/users
+###
+DELETE http://localhost:4000/users/660b7c301e74ee8b63b557de
+
+###
 POST http://localhost:4000/users
 Content-Type: application/json
 
@@ -10,14 +15,3 @@ Content-Type: application/json
 
 ###
 GET http://localhost:4000/users/schools
-
-###
-GET http://localhost:4000/schools
-
-###
-POST http://localhost:4000/schools
-Content-Type: application/json
-
-{
-    "name": "Tisa ES"
-}
