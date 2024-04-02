@@ -1,8 +1,14 @@
 # Getting Started
-This project is made in fulfillment with our Capstone subject in IT332 S.Y. 2023-2024.
-
-## PrinciPal: Streamlined Public School Document Management System
+**PrinciPal: Streamlined Public School Document Management System**.\
+This project is made in fulfillment with our Capstone subject in IT332 S.Y. 2023-2024.\
 The system aims to provide school admins an efficient, simplistic, and all-in-one management and automation of report/s.
+
+## Prerequisites
+Ensure that **node_modules** is installed by initially running **`npm install`**.\
+No need to run `npm init -y` as the **package.json** file is already configured.
+
+By default, the **.env** file is ignored. Since it is necessary, you must create your own **.env** file in the root directory.\
+As a convention, let's use `DATABASE_URL=mongodb://localhost/db_princi_pal` for configuring our local development environment.
 
 ## Available Scripts
 
