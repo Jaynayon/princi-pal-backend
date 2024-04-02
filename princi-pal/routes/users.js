@@ -12,6 +12,32 @@ router.get('/', async (req, res) => {
     }
 })
 
+//Getting all users with schools
+//Should be /Users/:userID/Schools
+router.get('/Schools/', async (req, res) => {
+    try {
+        const users = await User.find()
+            .populate({
+                path: 'schools', //populate the schools field in the User model
+                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
+            })
+            .exec()
+
+        // Modify the response data to extract school names
+        const modifiedUsers = users.map(user => {
+            const schoolNames = user.schools.map(school => school.name);
+            return {
+                ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+                schools: schoolNames // Replace schools array with school names
+            };
+        });
+
+        res.json(modifiedUsers)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
 //Getting one
 router.get('/:id', getUser, (req, res) => {
     res.send(res.user)
