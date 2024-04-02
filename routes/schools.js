@@ -12,8 +12,6 @@ router.get('/', async (req, res) => {
     }
 })
 
-
-
 //Creating one
 router.post('/', getSchoolName, async (req, res) => {
     //Check school name if it exists
