@@ -1,17 +1,26 @@
 GET http://localhost:4000/users
 ###
-DELETE http://localhost:4000/users/660b7c301e74ee8b63b557de
 
+GET http://localhost:4000/users/j.nayon1221@gmail.com
 ###
+
 POST http://localhost:4000/users
 Content-Type: application/json
 
 {
-    "name": "testing2",
+    "name": "testing",
     "password": "testing nasad",
-    "email": "j.nayon123@gmail.com",
-    "phone": "09267288567"
+    "email": "j.nayon1221@gmail.com",
+    "phone": "09267288567",
+    "hello": "mane"
 }
+###
+DELETE http://localhost:4000/users/660c2060c31e99a0c5484c3a
 
 ###
-GET http://localhost:4000/users/schools
+PATCH http://localhost:4000/users/j.nayon1221@gmail.com/school
+Content-Type: application/json
+
+{
+    "name": "Jaclupan ES"
+}

@@ -30,16 +30,27 @@ router.post('/', getSchoolName, async (req, res) => {
 })
 
 //Deleting one
-router.delete('/', getSchoolName, async (req, res) => {
-    if (res.school == null)
-        return res.status(404).json({ message: 'Cannot find school with that name' })
+router.patch('/:email/school', async (req, res, next) => {
+    await getUserByEmail(req, res, next, { params: true });
+}, async (req, res) => {
     try {
-        await res.school.deleteOne()
-        res.json({ message: 'School removed' })
+        await getSchoolName(req, res, () => { }) //check if school exists
+        const schoolExists = res.user.schools.some(school => school.equals(res.school)); //check for duplicate objects
+        console.log('School exists:', schoolExists); // Log the value of schoolExists
+
+        if (!schoolExists) {
+            await res.user.schools.push(res.school);
+            const insert = await res.user.save();
+            return res.send(insert); // Send success response if school doesn't exist
+        }
+        return res.status(409).json({ message: 'School already exists in User' }); // Send error response if school exists
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-})
+});
+
+
+//Update School
 
 //Middleware
 async function getSchoolName(req, res, next) {

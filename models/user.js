@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
     },
     schools: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Schools' //School model
+        ref: 'Schools', //School model
     }]
 })
 //This code creates/accesses the 'Users' collection and stores data in that collection

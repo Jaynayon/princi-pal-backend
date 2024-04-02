@@ -1,22 +1,24 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
+const School = require('../models/school')
 
 //Getting all
-router.get('/', async (req, res) => {
+/*router.get('/', async (req, res) => {
     try {
         const users = await User.find().select('-_id -__v'); //excludes the _id
         res.json(users)
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
-})
+})*/
 
 //Getting all users with schools
 //Should be /Users/:userID/Schools
-router.get('/Schools/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const users = await User.find()
+            .select('-_id -__v') //excludes the _id and __v
             .populate({
                 path: 'schools', //populate the schools field in the User model
                 select: 'name -_id' // Include only the 'name' field and exclude the '_id'
@@ -38,13 +40,15 @@ router.get('/Schools/', async (req, res) => {
     }
 })
 
-//Getting one
-router.get('/:id', getUser, (req, res) => {
-    res.send(res.user)
-})
+// Getting one
+router.get('/:email', async (req, res, next) => {
+    await getUserByEmail(req, res, next, { params: true });
+}, (req, res) => {
+    res.send(res.user);
+});
 
 //Creating one
-router.post('/', async (req, res) => {
+router.post('/', getDuplicatesByEmail, async (req, res) => {
     const user = new User({
         name: req.body.name,
         password: req.body.password,
@@ -60,7 +64,7 @@ router.post('/', async (req, res) => {
 })
 
 //Updating one
-router.patch('/:id', getUser, async (req, res) => {
+router.patch('/:id', getUserByEmail, async (req, res) => {
     if (req.body.name != null) {
         res.user.name = req.body.name
     }
@@ -81,7 +85,6 @@ router.patch('/:id', getUser, async (req, res) => {
     }
 })
 
-
 //Deleting one
 router.delete('/:id', getUser, async (req, res) => {
     try {
@@ -92,15 +95,47 @@ router.delete('/:id', getUser, async (req, res) => {
     }
 })
 
-//Getting data from user using email
-router.get('/email/:email', getUserByEmail, async (req, res) => {
-    //check if email exists
+// Insert school to user
+router.patch('/:email/school', async (req, res, next) => {
+    await getUserByEmail(req, res, next, { params: true });
+}, async (req, res, next) => {
+    await getSchoolName(req, res, next) //check if school exists 
+}, async (req, res) => {
     try {
-        res.json(res.user)
+        const schoolExists = res.user.schools.map(school => school.equals(res.school)); //check for duplicate objects
+        if (!schoolExists) {
+            await res.user.schools.push(res.school);
+            const insert = await res.user.save();
+            return res.send(insert); // Send success response if school doesn't exist
+        }
+        return res.status(409).json({ message: 'School already exists in User' }); // Send error response if school exists
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Getting one
+router.get('/:email', async (req, res, next) => {
+    await getUserByEmail(req, res, next, { params: true });
+}, (req, res) => {
+    res.send(res.user);
+});
+
+
+
+async function getSchoolName(req, res, next) {
+    let school
+    try {
+        school = await School.findOne({ name: req.body.name })
+        if (school == null)
+            return res.status(404).json({ message: 'Cannot find school with that name' })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
-})
+    //Creates the object user
+    res.school = school;
+    next();
+}
 
 //Middleware
 async function getUser(req, res, next) {
@@ -117,12 +152,27 @@ async function getUser(req, res, next) {
     next() //proceeds to the next function
 }
 
-async function getUserByEmail(req, res, next) {
+async function getUserByEmail(req, res, next, { params = false } = {}) {
     let user
     try {
-        user = await User.findOne({ email: req.params.email })
+        user = await User.findOne({ email: params ? req.params.email : req.body.email })
         if (user == null)
             return res.status(404).json({ message: 'Cannot find user with that email' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+    //Creates the object user
+    res.user = user
+    next() //proceeds to the next function
+}
+
+async function getDuplicatesByEmail(req, res, next) {
+    let user
+    try {
+        user = await User.findOne({ email: req.body.email })
+        if (user) {
+            return res.status(409).json({ message: 'User already exists' })
+        }
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
