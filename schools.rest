@@ -9,9 +9,13 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/schools
+DELETE http://localhost:4000/schools/660cb9bbd19f0d6222ddc80e
+
+###
+PATCH http://localhost:4000/schools/660cbddc70b429ea2435adb2
 Content-Type: application/json
 
 {
-    "name": "Testing ES"
+    "name": "Testings22 ES",
+    "test": "waragud"
 }

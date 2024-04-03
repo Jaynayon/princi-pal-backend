@@ -64,15 +64,12 @@ router.post('/', getDuplicatesByEmail, async (req, res) => {
 })
 
 //Updating one
-router.patch('/:id', getUserByEmail, async (req, res) => {
+router.patch('/:id', getUser, async (req, res) => {
     if (req.body.name != null) {
         res.user.name = req.body.name
     }
     if (req.body.password != null) {
         res.user.password = req.body.password
-    }
-    if (req.body.email != null) {
-        res.user.email = req.body.email
     }
     if (req.body.phone != null) {
         res.user.phone = req.body.phone
