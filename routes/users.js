@@ -3,16 +3,6 @@ const router = express.Router()
 const User = require('../models/user')
 const School = require('../models/school')
 
-//Getting all
-/*router.get('/', async (req, res) => {
-    try {
-        const users = await User.find().select('-_id -__v'); //excludes the _id
-        res.json(users)
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})*/
-
 //Getting all users with schools
 //Should be /Users/:userID/Schools
 router.get('/', async (req, res) => {
@@ -44,7 +34,11 @@ router.get('/', async (req, res) => {
 router.get('/:email', async (req, res, next) => {
     await getUserByEmail(req, res, next, { params: true });
 }, (req, res) => {
-    res.send(res.user);
+    try {
+        res.send(res.user);
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
 });
 
 //Creating one
