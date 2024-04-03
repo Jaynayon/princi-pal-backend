@@ -87,8 +87,8 @@ router.delete('/:id', getUser, async (req, res) => {
 })
 
 // Insert school to user
-router.patch('/:email/school', async (req, res, next) => {
-    await getUserByEmail(req, res, next, { params: true }); //check if user exists
+router.patch('/:id/school', async (req, res, next) => {
+    await getUser(req, res, next); //check if user exists
 }, async (req, res, next) => {
     await getSchoolByName(req, res, next) //check if school exists 
 }, async (req, res) => {
