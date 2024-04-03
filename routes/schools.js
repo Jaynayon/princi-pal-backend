@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 })
 
 //Creating one
-router.post('/', getSchoolName, async (req, res) => {
+router.post('/', getDuplicates, async (req, res) => {
     //Check school name if it exists
     if (res.school) {
         return res.status(409).json({ message: 'Duplicate school' })
@@ -53,12 +53,13 @@ router.patch('/:id', getSchool, async (req, res) => {
 })
 
 //Middleware
-async function getSchoolName(req, res, next) {
+async function getDuplicates(req, res, next) {
     let school
     try {
         school = await School.findOne({ name: req.body.name })
-        /*if (school == null)
-            return res.status(404).json({ message: 'Cannot find school with that name' })*/
+        if (school) {
+            return res.status(409).json({ message: 'School already exists' })
+        }
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
