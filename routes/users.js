@@ -90,7 +90,7 @@ router.delete('/:id', getUser, async (req, res) => {
 router.patch('/:email/school', async (req, res, next) => {
     await getUserByEmail(req, res, next, { params: true }); //check if user exists
 }, async (req, res, next) => {
-    await getSchoolName(req, res, next) //check if school exists 
+    await getSchoolByName(req, res, next) //check if school exists 
 }, async (req, res) => {
     try {
         const schoolExists = res.user.schools.some(//check for duplicate objects
@@ -152,7 +152,7 @@ async function getDuplicatesByEmail(req, res, next) {
     next() //proceeds to the next function
 }
 
-async function getSchoolName(req, res, next) {
+async function getSchoolByName(req, res, next) {
     let school
     try {
         school = await School.findOne({ name: req.body.name })
