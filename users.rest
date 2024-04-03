@@ -1,7 +1,7 @@
 GET http://localhost:4000/users
 ###
 
-GET http://localhost:4000/users/j.nayon1221@gmail.com
+GET http://localhost:4000/users/j.nayon123@gmail.com
 ###
 
 POST http://localhost:4000/users
@@ -10,15 +10,26 @@ Content-Type: application/json
 {
     "name": "testing",
     "password": "testing nasad",
-    "email": "j.nayon1221@gmail.com",
-    "phone": "09267288567",
-    "hello": "mane"
+    "email": "j.nayon123@gmail.com",
+    "phone": "09267288567"
 }
 ###
-DELETE http://localhost:4000/users/660c2060c31e99a0c5484c3a
+DELETE http://localhost:4000/users/660ca489e3d5f88ccc4d7d9c
 
 ###
-PATCH http://localhost:4000/users/j.nayon1221@gmail.com/school
+PATCH http://localhost:4000/users/660ca4b2e3d5f88ccc4d7db2
+Content-Type: application/json
+
+{
+    "name": "testing2",
+    "email": "j.nayon123@gmail.com",
+    "password": "testing nasad",
+    "phone": "09267288567"
+}
+
+
+###
+PATCH http://localhost:4000/users/j.nayon123@gmail.com/school
 Content-Type: application/json
 
 {

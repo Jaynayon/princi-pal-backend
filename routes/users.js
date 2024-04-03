@@ -97,12 +97,15 @@ router.delete('/:id', getUser, async (req, res) => {
 
 // Insert school to user
 router.patch('/:email/school', async (req, res, next) => {
-    await getUserByEmail(req, res, next, { params: true });
+    await getUserByEmail(req, res, next, { params: true }); //check if user exists
 }, async (req, res, next) => {
     await getSchoolName(req, res, next) //check if school exists 
 }, async (req, res) => {
     try {
-        const schoolExists = res.user.schools.map(school => school.equals(res.school)); //check for duplicate objects
+        const schoolExists = res.user.schools.some(//check for duplicate objects
+            school => school.equals(res.school._id)
+        );
+
         if (!schoolExists) {
             await res.user.schools.push(res.school);
             const insert = await res.user.save();
@@ -113,29 +116,6 @@ router.patch('/:email/school', async (req, res, next) => {
         res.status(500).json({ message: err.message });
     }
 });
-
-// Getting one
-router.get('/:email', async (req, res, next) => {
-    await getUserByEmail(req, res, next, { params: true });
-}, (req, res) => {
-    res.send(res.user);
-});
-
-
-
-async function getSchoolName(req, res, next) {
-    let school
-    try {
-        school = await School.findOne({ name: req.body.name })
-        if (school == null)
-            return res.status(404).json({ message: 'Cannot find school with that name' })
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-    //Creates the object user
-    res.school = school;
-    next();
-}
 
 //Middleware
 async function getUser(req, res, next) {
@@ -179,6 +159,20 @@ async function getDuplicatesByEmail(req, res, next) {
     //Creates the object user
     res.user = user
     next() //proceeds to the next function
+}
+
+async function getSchoolName(req, res, next) {
+    let school
+    try {
+        school = await School.findOne({ name: req.body.name })
+        if (school == null)
+            return res.status(404).json({ message: 'Cannot find school with that name' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    //Creates the object user
+    res.school = school;
+    next();
 }
 
 module.exports = router
