@@ -1,16 +1,57 @@
 const express = require('express')
 const router = express.Router()
 const School = require('../models/school')
+const User = require('../models/user');
+const school = require('../models/school');
 
 //Getting all
 router.get('/', async (req, res) => {
     try {
-        const school = await School.find()
+        const school = await School.find().select('-users') //excludes the users
         res.json(school)
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
 })
+
+//Get all users in school
+router.get('/users/', async (req, res) => {
+    try {
+        const schools = await School.find().lean(); // Get all schools
+
+        // Iterate through each school and populate the 'users' field
+        for (const school of schools) {
+            school.users = await User.find({ schools: school._id })// Find users with the current school's id
+                .lean()
+                .select('-schools');
+        }
+
+        res.json(schools); // Send populated schools array
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//Get all users in a certain school
+router.get('/:id/users', getSchool, async (req, res) => {
+    try {
+        const school = res.school.toObject() //converts to plain javascript object to prevent returning a reference
+
+        // Find users associated with the school
+        const users = await User.find({ schools: req.params.id })
+            .lean()
+            .select('-schools');
+
+        // Assign the users to the school object
+        school.users = users;
+
+        // Send the school object with users as the response
+        res.json(school);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 
 //Creating one
 router.post('/', getDuplicates, async (req, res) => {
