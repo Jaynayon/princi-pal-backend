@@ -13,8 +13,14 @@ app.use(express.json())
 
 const usersRouter = require('./routes/users')
 const schoolsRouter = require('./routes/schools')
+const lrsRouter = require('./routes/lrs') //
+const positionsRouter = require('./routes/positions') //
+const rolesRouter = require('./routes/roles') //
 app.use('/users', usersRouter)
 app.use('/schools', schoolsRouter)
+app.use('/lrs', lrsRouter)
+app.use('/positions', positionsRouter)
+app.use('/roles', rolesRouter)
 
 app.listen('4000', () => console.log('Server started'))
 
