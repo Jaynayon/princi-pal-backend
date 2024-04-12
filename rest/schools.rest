@@ -1,6 +1,12 @@
 GET http://localhost:4000/schools
 
 ###
+GET http://localhost:4000/schools/users/
+
+###
+GET http://localhost:4000/schools/660d217e440a5825bf7fad23/users/
+
+###
 POST http://localhost:4000/schools
 Content-Type: application/json
 
@@ -8,14 +14,14 @@ Content-Type: application/json
     "name": "Testing ES"
 }
 
-###
-DELETE http://localhost:4000/schools/660cb9bbd19f0d6222ddc80e
+###    
+DELETE http://localhost:4000/schools/660cd6f4507816b24794b447
 
 ###
 PATCH http://localhost:4000/schools/660cbddc70b429ea2435adb2
 Content-Type: application/json
 
 {
-    "name": "Testings22 ES",
+    "name": "Testing ES",
     "test": "waragud"
 }

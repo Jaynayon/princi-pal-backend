@@ -1,0 +1,15 @@
+GET http://localhost:4000/lrs
+
+###
+POST http://localhost:4000/lrs
+Content-Type: application/json
+
+{
+    "date": "test2",
+    "ors_burs_no": "test2",
+    "particulars": "test2",
+    "amount": "test2",
+    "claimant": "test2",
+    "sds": "test2",
+    "head_accounting": "test2"
+}
