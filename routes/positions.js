@@ -12,6 +12,29 @@ router.get('/', async (req, res) => {
     }
 })
 
+//Getting one
+router.get('/:name', getPositionByName, async (req, res) => {
+    try {
+        console.log(res.pos)
+        res.send(res.pos)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+/*
+// Getting one
+router.get('/:name', async (req, res, next) => {
+    await getUserByEmail(req, res, next, { params: true });
+}, (req, res) => {
+    try {
+        res.send(res.user);
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+});*/
+
+
 //Creating one
 router.post('/', getDuplicates, async (req, res) => {
     //Check position name if it exists
@@ -73,6 +96,19 @@ async function getPosition(req, res, next) {
     let pos
     try {
         pos = await Position.findById(req.params.id)
+        if (pos == null)
+            return res.status(404).json({ message: 'Cannot find position' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    res.pos = pos
+    next()
+}
+
+async function getPositionByName(req, res, next) {
+    let pos
+    try {
+        pos = await Position.findOne({ name: req.params.name })
         if (pos == null)
             return res.status(404).json({ message: 'Cannot find position' })
     } catch (err) {

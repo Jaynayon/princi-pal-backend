@@ -2,7 +2,9 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
 const School = require('../models/school')
+const Position = require('../models/position')
 
+/*
 //Getting all users with schools
 //Should be /Users/:userID/Schools
 router.get('/', async (req, res) => {
@@ -28,7 +30,34 @@ router.get('/', async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
+})*/
+
+/*
+router.get('/', async (req, res) => {
+    try {
+        const users = await User.find()
+            .select('-_id -__v') //excludes the _id and __v
+            .populate({
+                path: 'position', //populate the schools field in the User model
+                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
+            })
+            .exec()
+
+        // Modify the response data to extract school names
+        const modifiedUsers = users.map(user => {
+            const schoolNames = user.schools.map(school => school.name);
+            return {
+                ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+                schools: schoolNames // Replace schools array with school names
+            };
+        });
+
+        res.json(modifiedUsers)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
 })
+*/
 
 // Getting one
 router.get('/:email', async (req, res, next) => {
@@ -41,13 +70,20 @@ router.get('/:email', async (req, res, next) => {
     }
 });
 
-//Creating one
-router.post('/', getDuplicatesByEmail, async (req, res) => {
+// Insert one User with designated Position
+router.post('/', async (req, res, next) => {
+    await getPositionByName(req, res, next)
+}, async (req, res, next) => {
+    await getDuplicatesByEmail(req, res, next)
+}, async (req, res) => {
     const user = new User({
-        name: req.body.name,
-        password: req.body.password,
+        fname: req.body.fname,
+        mname: req.body.mname,
+        lname: req.body.lname,
+        username: req.body.username,
         email: req.body.email,
-        phone: req.body.phone
+        password: req.body.password,
+        position: res.pos
     })
     try {
         const newUser = await user.save()
@@ -56,6 +92,26 @@ router.post('/', getDuplicatesByEmail, async (req, res) => {
         res.status(400).json({ message: err.message })
     }
 })
+
+/* 
+//Creating one
+router.post('/', getDuplicatesByEmail, async (req, res) => {
+    const user = new User({
+        fname: req.body.fname,
+        mname: req.body.mname,
+        lname: req.body.lname,
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+    })
+    try {
+        const newUser = await user.save()
+        res.status(201).json(newUser)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+*/
 
 //Updating one
 router.patch('/:id', getUser, async (req, res) => {
@@ -164,6 +220,19 @@ async function getSchoolByName(req, res, next) {
     //Creates the object user
     res.school = school;
     next();
+}
+
+async function getPositionByName(req, res, next) {
+    let pos
+    try {
+        pos = await Position.findOne({ name: req.body.position })
+        if (pos == null)
+            return res.status(404).json({ message: 'Cannot find position' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    res.pos = pos
+    next()
 }
 
 module.exports = router
