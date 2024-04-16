@@ -28,8 +28,13 @@ const userSchema = mongoose.Schema({
     position: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Position', //School model
+        //unique: false //Because multiple users can have multiple schools
+    },
+    school_assoc: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SchoolAssoc', //School model
         unique: false //Because multiple users can have multiple schools
-    }
+    }]
     /*phone: {
         type: String,
         validate: {
