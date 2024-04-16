@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
     }
 })*/
 
-/*
+//Getting all users with positions
 router.get('/', async (req, res) => {
     try {
         const users = await User.find()
@@ -45,10 +45,10 @@ router.get('/', async (req, res) => {
 
         // Modify the response data to extract school names
         const modifiedUsers = users.map(user => {
-            const schoolNames = user.schools.map(school => school.name);
+            const positionName = user.position.name;
             return {
                 ...user.toObject(), // Convert Mongoose document to plain JavaScript object
-                schools: schoolNames // Replace schools array with school names
+                position: positionName // Replace schools array with school names
             };
         });
 
@@ -57,16 +57,29 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 })
-*/
 
-// Getting one
+// Getting one user by email
 router.get('/:email', async (req, res, next) => {
-    await getUserByEmail(req, res, next, { params: true });
-}, (req, res) => {
     try {
-        res.send(res.user);
+        const user = await User.findOne({ email: req.params.email })
+            .select('-__v');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Populate the 'position' field with the corresponding position data
+        await user.populate({
+            path: 'position',
+            select: '-__v'
+        })
+
+        // Access the populated 'position' field in the user object
+        const userWithPosition = user.toObject();
+
+        res.send(userWithPosition);
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -93,27 +106,13 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-/* 
-//Creating one
-router.post('/', getDuplicatesByEmail, async (req, res) => {
-    const user = new User({
-        fname: req.body.fname,
-        mname: req.body.mname,
-        lname: req.body.lname,
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-    })
-    try {
-        const newUser = await user.save()
-        res.status(201).json(newUser)
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-})
-*/
 
 //Updating one
+router.patch('/:id', async (req, res, next) => {
+    await getPositionByName(req, res, next)
+}, async (req, res, next) => {
+    await getUser(req, res, next)
+})
 router.patch('/:id', getUser, async (req, res) => {
     if (req.body.name != null) {
         res.user.name = req.body.name
@@ -121,8 +120,8 @@ router.patch('/:id', getUser, async (req, res) => {
     if (req.body.password != null) {
         res.user.password = req.body.password
     }
-    if (req.body.phone != null) {
-        res.user.phone = req.body.phone
+    if (req.body.position != null) {
+        res.user.position = res.pos
     }
     try {
         const newUser = await res.user.save()
@@ -142,6 +141,7 @@ router.delete('/:id', getUser, async (req, res) => {
     }
 })
 
+/*
 // Insert school to user
 router.patch('/:id/school', async (req, res, next) => {
     await getUser(req, res, next); //check if user exists
@@ -162,7 +162,7 @@ router.patch('/:id/school', async (req, res, next) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-});
+});*/
 
 //Middleware
 async function getUser(req, res, next) {

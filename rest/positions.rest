@@ -1,5 +1,8 @@
 GET http://localhost:4000/positions
 
+### CASE SENSITIVE
+GET http://localhost:4000/positions/Principal
+
 ###
 POST http://localhost:4000/positions
 Content-Type: application/json

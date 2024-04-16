@@ -1,143 +1,63 @@
 console.log('testing check')
 var XLSX = require("xlsx");
 var workbook = XLSX.readFile("templates/file_temp.xlsx");
-
 let worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-/*for (let index = 2; index < 7; index++) {
-    const id = worksheet[`A${index}`].v;
-    const name = worksheet[`B${index}`].v;
-
-    console.log({
-        id: id, name: name
-    })
-}*/
-/*
-// Define the values to write
-const dataToWrite = [
-    { id: 1, name: "John2" },
-    { id: 2, name: "Alice2" },
-    { id: 3, name: "Bob2" },
-    { id: 4, name: "Emma2" },
-    { id: 5, name: "James2" }
-];
-
-// Write values to specific cells
-dataToWrite.forEach((data, index) => {
-    const rowIndex = index + 2; // Start from row 2
-    worksheet[`A${rowIndex}`] = { t: 'n', v: data.id }; // Writing numeric value
-    worksheet[`B${rowIndex}`] = { t: 's', v: data.name }; // Writing string value
-});
-
-// Write the modified worksheet back to the workbook
-const newWorkbook = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(newWorkbook, worksheet, workbook.SheetNames[0]);
-
-// Save the workbook to a new file
-const outputPath = 'output/modified_file_temp.xlsx';
-XLSX.writeFile(newWorkbook, outputPath);
-
-console.log(`Values written to Excel file: ${outputPath}`);
-*/
-
 const XlsxPopulate = require('xlsx-populate');
+//Use needed models to fetch data
 
-/*
-XlsxPopulate.fromFileAsync("templates/file_temp.xlsx")
-    .then(workbook => {
-        const worksheet = workbook.sheet(0); // Assuming data is in the first sheet
+//Data must be in an array even if it's a single data to access foreach
+const data = { //set of data to insert
+    date: '11/11/2023',
+    ors_burs_no: "SI# 2056",
+    particulars: "TINONGS FOOD INTRNL- Purchased torta bread (small) for District Meet",
+    amount: 3124
+}
 
-        const dataToWrite = [
-            { id: 1, name: "John" },
-            { id: 2, name: "Alice" },
-            { id: 3, name: "Bob" },
-            { id: 4, name: "Emma" },
-            { id: 5, name: "James" }
-        ];
+const dataToWrite = Array(40).fill(data) //duplicate data
+const schoolName = 'Jaclupan' //for file naming
 
-        // Write values to specific cells and retain cell styling
-        dataToWrite.forEach((data, index) => {
-            const rowIndex = index + 2; // Start from row 2
+//NOTE: Validation occurs in the route, if data is 0, the it is validated in the route
+//Dagdag feature kay if ever daghan ang data dapat automatic mo create og new sheet referencing the sum from the previous sheet
 
-            // Writing numeric value
-            worksheet.cell(`A${rowIndex}`).value(data.id);
+//This function starts populating rows in a certain index
+const insertLRData = (dataToWrite, schoolName) => {
+    XlsxPopulate.fromFileAsync("templates/LR-2024.xlsx")
+        .then(workbook => {
+            const worksheet = workbook.sheet(0); // Assuming data is in the first sheet 
 
-            // Writing string value
-            worksheet.cell(`B${rowIndex}`).value(data.name);
+            let rowIndex = 13; // Start from row 13
+
+            // Populate or change the value of a certain cell
+            worksheet.cell('B9').value(2);
+
+            // Write values to specific cells and retain cell styling
+            dataToWrite.forEach(data => {
+                // Writing values to respective cells
+                worksheet.cell(`B${rowIndex}`).value(data.date);
+                worksheet.cell(`C${rowIndex}`).value(data.ors_burs_no);
+                worksheet.cell(`D${rowIndex}`).value(data.particulars);
+                worksheet.cell(`E${rowIndex}`).value(data.amount);
+
+                rowIndex++; // Move to the next row for the next set of data
+            });
+
+            // Save the workbook to a new file
+            return workbook.toFileAsync(`output/${schoolName}_LR-2024.xlsx`, { force: true }); //overwrites the file if exists
+        })
+        .then(() => {
+            console.log("Values written to Excel file.");
+        })
+        .catch(error => {
+            console.error(error);
         });
+}
 
-        // Save the workbook to a new file
-        return workbook.toFileAsync('output/modified_file_temp.xlsx');
-    })
-    .then(() => {
-        console.log("Values written to Excel file.");
-    })
-    .catch(error => {
-        console.error(error);
-    });
-    */
+//insertLRData(dataToWrite, schoolName)
 
 
-/*
-//This function changes the value of a certain cell
-const filename = "templates/file_temp.xlsx";
 
-XlsxPopulate.fromFileAsync(filename)
-    .then(workbook => {
-        const worksheet = workbook.sheet(0); // Assuming data is in the first sheet
 
-        // Populate or change the value of a certain cell
-        const cellAddress = 'C3'; // Example: Change value in cell C3
-        worksheet.cell(cellAddress).value('New Value');
 
-        // Save the workbook
-        return workbook.toFileAsync(filename);
-    })
-    .then(() => {
-        console.log("Value changed in Excel file.");
-    })
-    .catch(error => {
-        console.error(error);
-    });
-*/
-
-/*
-//This function starts populating rows in a certain index and inserts a row after each data.
-XlsxPopulate.fromFileAsync("templates/file_temp.xlsx")
-    .then(workbook => {
-        const worksheet = workbook.sheet(0); // Assuming data is in the first sheet
-
-        const dataToWrite = [
-            { id: 1, name: "John" },
-            { id: 2, name: "Alice" },
-            { id: 3, name: "Bob" },
-            { id: 4, name: "Emma" },
-            { id: 5, name: "James" }
-        ];
-
-        let rowIndex = 5; // Start from row 5
-
-        // Write values to specific cells and retain cell styling
-        dataToWrite.forEach((data, index) => {
-            // Writing numeric value
-            worksheet.cell(`A${rowIndex}`).value(data.id);
-
-            // Writing string value
-            worksheet.cell(`B${rowIndex}`).value(data.name);
-
-            rowIndex++; // Move to the next row for the next set of data 
-        });
-
-        // Save the workbook to a new file
-        return workbook.toFileAsync('output/modified_file_temp.xlsx', { force: true }); //overwrites the file if exists
-    })
-    .then(() => {
-        console.log("Values written to Excel file.");
-    })
-    .catch(error => {
-        console.error(error);
-    });
-*/
 
 /*
 const express = require('express');
