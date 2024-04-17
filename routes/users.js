@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt')
 const router = express.Router()
 const User = require('../models/user')
 const School = require('../models/school')
@@ -181,28 +182,15 @@ router.delete('/:id', getUser, async (req, res) => {
     }
 })
 
-/*
-// Insert school to user
-router.patch('/:id/school', async (req, res, next) => {
-    await getUser(req, res, next); //check if user exists
-}, async (req, res, next) => {
-    await getSchoolByName(req, res, next) //check if school exists 
-}, async (req, res) => {
+// Validate credentials
+router.post('/validate', getUserByEmail, async (req, res) => {
     try {
-        const schoolExists = res.user.schools.some(//check for duplicate objects
-            school => school.equals(res.school._id)
-        );
-
-        if (!schoolExists) {
-            await res.user.schools.push(res.school);
-            const insert = await res.user.save();
-            return res.send(insert); // Send success response if school doesn't exist
-        }
-        return res.status(409).json({ message: 'School already exists in User' }); // Send error response if school exists
+        const isMatch = await bcrypt.compare(req.body.password, res.user.password);
+        res.json({ isMatch });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message })
     }
-});*/
+})
 
 //Middleware
 async function getUser(req, res, next) {
@@ -224,10 +212,10 @@ async function getUser(req, res, next) {
     }
 }
 
-async function getUserByEmail(req, res, next, { params = false } = {}) {
+async function getUserByEmail(req, res, next) {
     let user
     try {
-        user = await User.findOne({ email: params ? req.params.email : req.body.email })
+        user = await User.findOne({ email: req.body.email })
         if (user == null)
             return res.status(404).json({ message: 'Cannot find user with that email' })
     } catch (err) {
