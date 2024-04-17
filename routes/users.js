@@ -3,6 +3,7 @@ const router = express.Router()
 const User = require('../models/user')
 const School = require('../models/school')
 const Position = require('../models/position')
+const Association = require('../models/association')
 
 /*
 //Getting all users with schools
@@ -36,7 +37,11 @@ router.get('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const users = await User.find()
-            .select('-_id -__v') //excludes the _id and __v
+            .select('-__v') //excludes the _id and __v
+            .populate({
+                path: 'position', //populate the schools field in the User model
+                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
+            })
             .populate({
                 path: 'position', //populate the schools field in the User model
                 select: 'name -_id' // Include only the 'name' field and exclude the '_id'
@@ -106,6 +111,35 @@ router.post('/', async (req, res, next) => {
     }
 })
 
+// Insert an Association between User and School
+router.patch('/:id/school/:school_id', async (req, res, next) => {
+    await getUser(req, res, next); // Get user by ID
+}, async (req, res, next) => {
+    await getSchool(req, res, next); // Get school by school_id
+}, async (req, res, next) => {
+    await getAssociation(req, res, next); // Check if association exists
+}, async (req, res) => {
+    try {
+        if (!res.assoc) {
+            // Create association if it doesn't exist
+            const newAssoc = new Association({
+                user: res.user._id, // Use user ID
+                school: res.school._id // Use school ID
+            });
+            const savedAssoc = await newAssoc.save();
+
+            // Update user's school_assoc array with the association's _id
+            res.user.association.push(savedAssoc._id);
+            await res.user.save();
+
+            return res.json(res.user); // Send success response with updated user object
+        } else {
+            return res.status(409).json({ message: 'School already exists in User' });
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
 
 //Updating one
 router.patch('/:id', async (req, res, next) => {
@@ -166,17 +200,16 @@ router.patch('/:id/school', async (req, res, next) => {
 
 //Middleware
 async function getUser(req, res, next) {
-    let user
     try {
-        user = await User.findById(req.params.id)
-        if (user == null)
-            return res.status(404).json({ message: 'Cannot find user' })
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'Cannot find user' });
+        }
+        res.user = user; // Attach user object to response
+        next();
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-    //Creates the object user
-    res.user = user
-    next() //proceeds to the next function
 }
 
 async function getUserByEmail(req, res, next, { params = false } = {}) {
@@ -233,6 +266,34 @@ async function getPositionByName(req, res, next) {
     }
     res.pos = pos
     next()
+}
+
+async function getSchool(req, res, next) {
+    try {
+        const school = await School.findById(req.params.school_id);
+        if (!school) {
+            return res.status(404).json({ message: 'Cannot find school' });
+        }
+        res.school = school; // Attach school object to response
+        next();
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+}
+
+async function getAssociation(req, res, next) {
+    try {
+        const assoc = await Association.findOne({ user: res.user._id, school: res.school._id });
+
+        if (!assoc) {
+            res.assoc = null; // Set res.assoc to null if association doesn't exist
+        } else {
+            res.assoc = assoc; // Attach found association to response
+        }
+        next();
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
 }
 
 module.exports = router

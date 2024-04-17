@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const association = require('./association')
 
 const userSchema = mongoose.Schema({
     fname: {
@@ -30,7 +31,7 @@ const userSchema = mongoose.Schema({
         ref: 'Position', //School model
         //unique: false //Because multiple users can have multiple schools
     },
-    school_assoc: [{
+    association: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SchoolAssoc', //School model
         unique: false //Because multiple users can have multiple schools
