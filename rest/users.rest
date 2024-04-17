@@ -8,28 +8,30 @@ POST http://localhost:4000/users
 Content-Type: application/json
 
 {
-    "fname": "testing2",
-    "mname": "testing2",
-    "lname": "testing2",
-    "username": "testing2",
+    "fname": "testing",
+    "mname": "testing",
+    "lname": "testing",
+    "username": "testing",
     "email": "j.nayon1234@gmail.com",
     "password": "testing nasad",
-    "position": "ADAS"
+    "position": "ADOF"
 }
 
 ###
-DELETE http://localhost:4000/users/661e489049025e014b6816d1
+DELETE http://localhost:4000/users/661f0786b0c3834d4c0ba389
 
 ###
-PATCH http://localhost:4000/users/661e59fec93d4213699ce552
+PATCH http://localhost:4000/users/661f0fa146c7a5adeaac2860
 Content-Type: application/json
 
 {
     "name": "bards2",
     "password": "testing nasad",
-    "position": "Adas"
+    "position": "ADAS"
 }
 
+###
+PATCH http://localhost:4000/users/661f1238e0150f40a49bf1c5/school/660d217e440a5825bf7fad23
 
 ###
 PATCH http://localhost:4000/users/660d2173440a5825bf7fad1d/school

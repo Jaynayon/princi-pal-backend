@@ -43,8 +43,12 @@ router.get('/', async (req, res) => {
                 select: 'name -_id' // Include only the 'name' field and exclude the '_id'
             })
             .populate({
-                path: 'position', //populate the schools field in the User model
-                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
+                path: 'association', //populate the schools field in the User model
+                select: '-user -__v -_id', // Include only the 'name' field and exclude the '_id'
+                populate: {
+                    path: 'school', // Populate the school field within each association
+                    select: 'name -_id' // Include only the 'name' field of the school
+                }
             })
             .exec()
 
@@ -67,22 +71,35 @@ router.get('/', async (req, res) => {
 router.get('/:email', async (req, res, next) => {
     try {
         const user = await User.findOne({ email: req.params.email })
-            .select('-__v');
+            .select('-__v')
+            .populate({
+                path: 'position',
+                select: '-__v'
+            })
+            .populate({
+                path: 'association', //populate the schools field in the User model
+                select: '-user -__v -_id', // Include only the 'name' field and exclude the '_id'
+                populate: {
+                    path: 'school', // Populate the school field within each association
+                    select: 'name -_id' // Include only the 'name' field of the school
+                }
+            })
+            .exec()
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Populate the 'position' field with the corresponding position data
-        await user.populate({
-            path: 'position',
-            select: '-__v'
-        })
+        // Extract position name from user.position or set to null if user.position is null
+        const positionName = user.position ? user.position.name : null;
 
-        // Access the populated 'position' field in the user object
-        const userWithPosition = user.toObject();
+        // Modify the response data to include the extracted position name
+        const modifiedUser = {
+            ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+            position: positionName // Replace position object with position name
+        };
 
-        res.send(userWithPosition);
+        res.send(modifiedUser);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

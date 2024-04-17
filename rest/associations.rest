@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/associations/661f0eff1824b452cee688a2
+DELETE http://localhost:4000/associations/661f13d1722a69844e0fe8ae
 
 ###
 PATCH http://localhost:4000/associations/6618ba1dcd4848227911dd7f

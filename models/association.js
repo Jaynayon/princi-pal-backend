@@ -1,6 +1,16 @@
 const mongoose = require('mongoose')
 
 const associationsSchema = mongoose.Schema({
+    school: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Schools', //School model
+        //unique: false //Because multiple users can have multiple schools
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users', //Users model
+        //unique: false //Because multiple users can have multiple users
+    },
     approved: {
         type: Boolean,
         required: true,
@@ -15,17 +25,7 @@ const associationsSchema = mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
-    },
-    school: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Schools', //School model
-        //unique: false //Because multiple users can have multiple schools
-    },
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Users', //School model
-        //unique: false //Because multiple users can have multiple schools
-    },
+    }
     /*schools: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Schools', //School model
