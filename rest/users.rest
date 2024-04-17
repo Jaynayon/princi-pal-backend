@@ -8,7 +8,7 @@ POST http://localhost:4000/users/validate/
 Content-Type: application/json
 
 {
-    "email": "j.nayon123@gmail.com",
+    "email": "j.nayon1234@gmail.com",
     "password": "testing"
 }
 ###
@@ -21,7 +21,7 @@ Content-Type: application/json
     "mname": "testing",
     "lname": "testing",
     "username": "testing",
-    "email": "j.nayon123@gmail.com",
+    "email": "j.nayon1234@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }

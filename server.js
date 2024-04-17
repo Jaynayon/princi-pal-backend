@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
+const cors = require('cors');
 const app = express()
 const mongoose = require('mongoose')
 
@@ -10,6 +11,11 @@ db.on('error', (error) => console.log(error))
 db.once('open', () => console.log('Connected to Database'))
 
 app.use(express.json())
+// Allow requests from specific origin (e.g., http://localhost:3000)
+app.use(cors({
+    origin: 'http://localhost:3000',
+    //methods: ['GET', 'POST'], // Allow only specific HTTP methods if needed
+}));
 
 const usersRouter = require('./routes/users')
 const schoolsRouter = require('./routes/schools')
