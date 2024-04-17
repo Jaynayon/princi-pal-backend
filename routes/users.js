@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose');
 const router = express.Router()
 const User = require('../models/user')
 const School = require('../models/school')
@@ -217,9 +218,15 @@ router.patch('/:id/school', async (req, res, next) => {
 
 //Middleware
 async function getUser(req, res, next) {
+    const userId = req.params.id;
+
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
     try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
+        const user = await User.findById(userId);
+        if (user == null) {
             return res.status(404).json({ message: 'Cannot find user' });
         }
         res.user = user; // Attach user object to response
@@ -286,8 +293,13 @@ async function getPositionByName(req, res, next) {
 }
 
 async function getSchool(req, res, next) {
+    const schoolId = req.params.school_id;
+
+    if (!mongoose.isValidObjectId(schoolId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+    }
     try {
-        const school = await School.findById(req.params.school_id);
+        const school = await School.findById(schoolId);
         if (!school) {
             return res.status(404).json({ message: 'Cannot find school' });
         }
