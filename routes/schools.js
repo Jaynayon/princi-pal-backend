@@ -2,53 +2,50 @@ const express = require('express')
 const router = express.Router()
 const School = require('../models/school')
 const User = require('../models/user');
-const school = require('../models/school');
+const Association = require('../models/association');
 
-//Getting all
+
+// Getting all schools with associations
 router.get('/', async (req, res) => {
     try {
-        const school = await School.find().select('-users') //excludes the users
-        res.json(school)
+        const schools = await School.find().select('-users'); // Exclude the 'users' field
+
+        const modifiedSchools = await Promise.all(schools.map(async (school) => {
+            // Find association for the current school
+            const associations = await Association.find({ school: school._id })
+                .select('-school -_id -__v')
+                .populate({
+                    path: 'user',
+                    select: '-password -_id -__v',
+                    populate: {
+                        path: 'position',
+                        select: '-_id -__v'
+                    }
+                })
+
+            const formattedUsers = associations.map(association => ({
+                fname: association.user.fname,
+                mname: association.user.mname,
+                lname: association.user.lname,
+                username: association.user.username,
+                email: association.user.email,
+                position: association.user.position ? association.user.position.name : null,
+                approved: association.approved,
+                invitation: association.invitation,
+                admin: association.admin
+            }))
+
+            // Create a modified school object with the association
+            return {
+                ...school.toObject(), // Convert Mongoose document to plain JavaScript object
+                users: formattedUsers
+            };
+        }));
+
+        res.json(modifiedSchools);
     } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})
-
-//Get all users in school
-router.get('/users/', async (req, res) => {
-    try {
-        const schools = await School.find().lean(); // Get all schools
-
-        // Iterate through each school and populate the 'users' field
-        for (const school of schools) {
-            school.users = await User.find({ schools: school._id })// Find users with the current school's id
-                .lean()
-                .select('-schools');
-        }
-
-        res.json(schools); // Send populated schools array
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})
-
-//Get all users in a certain school
-router.get('/:id/users', getSchool, async (req, res) => {
-    try {
-        const school = res.school.toObject() //converts to plain javascript object to prevent returning a reference
-
-        // Find users associated with the school
-        const users = await User.find({ schools: req.params.id })
-            .lean()
-            .select('-schools');
-
-        // Assign the users to the school object
-        school.users = users;
-
-        // Send the school object with users as the response
-        res.json(school);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error(err); // Log the error for debugging
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 

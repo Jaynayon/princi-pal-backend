@@ -6,67 +6,51 @@ const School = require('../models/school')
 const Position = require('../models/position')
 const Association = require('../models/association')
 
-/*
-//Getting all users with schools
-//Should be /Users/:userID/Schools
+// Getting all users with positions and their associations with schools
 router.get('/', async (req, res) => {
     try {
         const users = await User.find()
-            .select('-_id -__v') //excludes the _id and __v
+            .select('-__v') // Exclude the '__v' field
             .populate({
-                path: 'schools', //populate the schools field in the User model
-                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
+                path: 'position',
+                select: 'name -_id' // Include only the 'name' field from the 'position' reference
             })
-            .exec()
+            .exec();
 
-        // Modify the response data to extract school names
-        const modifiedUsers = users.map(user => {
-            const schoolNames = user.schools.map(school => school.name);
-            return {
+        const modifiedUsers = await Promise.all(users.map(async (user) => {
+            // Find associations (schools) for the current user
+            const associations = await Association.find({ user: user._id })
+                .select('-user -__v') // Exclude 'user' and '__v' fields
+                .populate({
+                    path: 'school',
+                    select: 'name -_id' // Include only the 'name' field from the 'school' reference
+                })
+                .exec();
+
+            // Extract position name
+            const positionName = user.position ? user.position.name : null;
+
+            // Create a modified user object
+            const modifiedUser = {
                 ...user.toObject(), // Convert Mongoose document to plain JavaScript object
-                schools: schoolNames // Replace schools array with school names
+                position: positionName, // Assign position name directly
+                schools: associations.map(association => ({
+                    name: association.school.name,
+                    approved: association.approved,
+                    invitation: association.invitation,
+                    admin: association.admin
+                }))
             };
-        });
 
-        res.json(modifiedUsers)
+            return modifiedUser;
+        }));
+
+        res.json(modifiedUsers);
     } catch (err) {
-        res.status(500).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-})*/
+});
 
-//Getting all users with positions
-router.get('/', async (req, res) => {
-    try {
-        const users = await User.find()
-            .select('-__v') //excludes the _id and __v
-            .populate({
-                path: 'position', //populate the schools field in the User model
-                select: 'name -_id' // Include only the 'name' field and exclude the '_id'
-            })
-            .populate({
-                path: 'association', //populate the schools field in the User model
-                select: '-user -__v -_id', // Include only the 'name' field and exclude the '_id'
-                populate: {
-                    path: 'school', // Populate the school field within each association
-                    select: 'name -_id' // Include only the 'name' field of the school
-                }
-            })
-            .exec()
-
-        // Modify the response data to extract school names
-        const modifiedUsers = users.map(user => {
-            const positionName = user.position.name;
-            return {
-                ...user.toObject(), // Convert Mongoose document to plain JavaScript object
-                position: positionName // Replace schools array with school names
-            };
-        });
-
-        res.json(modifiedUsers)
-    } catch (err) {
-        res.status(500).json({ message: err.message })
-    }
-})
 
 // Getting one user by email
 router.get('/:email', async (req, res, next) => {
@@ -77,19 +61,19 @@ router.get('/:email', async (req, res, next) => {
                 path: 'position',
                 select: '-__v'
             })
-            .populate({
-                path: 'association', //populate the schools field in the User model
-                select: '-user -__v -_id', // Include only the 'name' field and exclude the '_id'
-                populate: {
-                    path: 'school', // Populate the school field within each association
-                    select: 'name -_id' // Include only the 'name' field of the school
-                }
-            })
             .exec()
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        // Find associations (schools) for the current user
+        const associations = await Association.find({ user: user._id })
+            .select('-user -_id -__v') // Exclude 'user' and '__v' fields
+            .populate({
+                path: 'school',
+                select: 'name -_id' // Include only the 'name' field from the 'school' reference
+            })
+            .exec();
 
         // Extract position name from user.position or set to null if user.position is null
         const positionName = user.position ? user.position.name : null;
@@ -97,7 +81,13 @@ router.get('/:email', async (req, res, next) => {
         // Modify the response data to include the extracted position name
         const modifiedUser = {
             ...user.toObject(), // Convert Mongoose document to plain JavaScript object
-            position: positionName // Replace position object with position name
+            position: positionName, // Replace position object with position name
+            schools: associations.map(association => ({
+                name: association.school.name,
+                approved: association.approved,
+                invitation: association.invitation,
+                admin: association.admin
+            }))
         };
 
         res.send(modifiedUser);
@@ -146,8 +136,6 @@ router.patch('/:id/school/:school_id', async (req, res, next) => {
             });
             const savedAssoc = await newAssoc.save();
 
-            // Update user's school_assoc array with the association's _id
-            res.user.association.push(savedAssoc._id);
             await res.user.save();
 
             return res.json(res.user); // Send success response with updated user object
