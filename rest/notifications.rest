@@ -1,0 +1,26 @@
+GET http://localhost:4000/notifications
+
+### CASE SENSITIVE
+//GET http://localhost:4000/positions/Principal
+
+###
+POST http://localhost:4000/notifications
+Content-Type: application/json
+
+{
+    "assocId":"6620e8871d8708790347323a",
+    "userId": "661f9ec778c4b179d54498f7",
+    "details": "Testing details"
+}
+
+###
+DELETE http://localhost:4000/notifications/6620e9d2b0f0701bb6cb55c7
+
+###
+PATCH http://localhost:4000/notifications/6620e435387eb136588fd2d3
+Content-Type: application/json
+
+{
+    "details": "ADOF",
+    "isRead": true
+}

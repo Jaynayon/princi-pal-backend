@@ -19,16 +19,18 @@ app.use(cors({
 
 const usersRouter = require('./routes/users')
 const schoolsRouter = require('./routes/schools')
-const lrsRouter = require('./routes/lrs') //
-const positionsRouter = require('./routes/positions') //
-const rolesRouter = require('./routes/roles') //
-const associationsRouter = require('./routes/associations') //
+const lrsRouter = require('./routes/lrs')
+const positionsRouter = require('./routes/positions')
+const rolesRouter = require('./routes/roles')
+const associationsRouter = require('./routes/associations')
+const notificationsRouter = require('./routes/notifications')
 app.use('/users', usersRouter)
 app.use('/schools', schoolsRouter)
 app.use('/lrs', lrsRouter)
 app.use('/positions', positionsRouter)
 app.use('/roles', rolesRouter)
 app.use('/associations', associationsRouter)
+app.use('/notifications', notificationsRouter)
 
 app.listen('4000', () => console.log('Server started'))
 

@@ -21,13 +21,13 @@ Content-Type: application/json
     "mname": "testing",
     "lname": "testing",
     "username": "testing",
-    "email": "j.nayon1234@gmail.com",
+    "email": "j.nayon1232@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }
 ###
 
-DELETE http://localhost:4000/users/661f9aa8ebb0be0d4d64bf33
+DELETE http://localhost:4000/users/66209174f7a709079b211862
 
 ###
 PATCH http://localhost:4000/users/661f300c018be135681f3d86
@@ -40,4 +40,4 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:4000/users/661f300c018be135681f3d86/school/661f31cd0260a2d33a970467
+PATCH http://localhost:4000/users/661f9ec778c4b179d54498f7/school/661f31c70260a2d33a970464
