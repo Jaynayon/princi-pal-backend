@@ -1,6 +1,8 @@
 const express = require('express')
+const mongoose = require('mongoose');
 const router = express.Router()
 const LR = require('../models/lr')
+const Document = require('../models/document')
 
 //Get all LRs
 router.get('/', async (req, res) => {
@@ -13,12 +15,12 @@ router.get('/', async (req, res) => {
 })
 
 //Creating one
-router.post('/', async (req, res) => {
-    const { date, ors_burs_no, particulars, amount } = req.body;
+router.post('/', getDocument, async (req, res) => {
+    const { doc_id, date, ors_burs_no, particulars, amount } = req.body;
 
     // Validate required fields
-    if (!date || !ors_burs_no || !particulars || amount === undefined || amount === null) {
-        return res.status(400).json({ message: 'Date, ORS/BURS number, particulars, and amount are required' });
+    if (!doc_id || !date || !ors_burs_no || !particulars || amount === undefined || amount === null) {
+        return res.status(400).json({ message: 'docId, Date, ORS/BURS number, particulars, and amount are required' });
     }
 
     // Validate amount field (must be a number)
@@ -26,8 +28,9 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ message: 'Amount must be a valid number' });
     }
 
-    // Create a new LR document
+    // Create a new LR document 
     const lr = new LR({
+        document: res.doc,
         date,
         ors_burs_no,
         particulars,
@@ -100,6 +103,23 @@ async function getLR(req, res, next) {
         res.status(400).json({ message: err.message })
     }
     res.lr = lr
+    next()
+}
+
+async function getDocument(req, res, next) {
+    let doc
+    const docId = req.body.doc_id
+    if (!mongoose.isValidObjectId(docId)) {
+        return res.status(400).json({ message: 'Invalid Document ID format' });
+    }
+    try {
+        doc = await Document.findById(docId)
+        if (doc == null)
+            return res.status(404).json({ message: 'Cannot find Document' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    res.doc = doc
     next()
 }
 

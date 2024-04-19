@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const LRSchema = mongoose.Schema({
+    document: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Documents', //Users model,
+        required: true //Needs to be under a Document 
+    },
     date: {
         type: String,
         required: false  // Assuming date is required 
@@ -20,9 +25,9 @@ const LRSchema = mongoose.Schema({
             {
                 validator: function (value) {
                     // Check if 'value' is a number
-                    return !isNaN(value) && typeof value === 'number';
+                    return !isNaN(value) && typeof value === 'number' && value >= 0;
                 },
-                message: 'Amount must be a valid number'
+                message: 'Amount must be a valid number positive number'
             },
             {
                 validator: function (value) {
