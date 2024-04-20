@@ -121,10 +121,10 @@ router.post('/', async (req, res, next) => {
 })
 
 // Insert an Association between User and School
-router.patch('/:id/school/:school_id', async (req, res, next) => {
-    await getUser(req, res, next); // Get user by ID
+router.post('/school/', async (req, res, next) => {
+    await getUser(req, res, params = false, next); // Get user by ID through body
 }, async (req, res, next) => {
-    await getSchool(req, res, next); // Get school by school_id
+    await getSchool(req, res, params = false, next); // Get school by school_id
 }, async (req, res, next) => {
     await getAssociation(req, res, next); // Check if association exists
 }, async (req, res) => {
@@ -135,11 +135,10 @@ router.patch('/:id/school/:school_id', async (req, res, next) => {
                 user: res.user._id, // Use user ID
                 school: res.school._id // Use school ID
             });
-            const savedAssoc = await newAssoc.save();
 
-            await res.user.save();
+            await newAssoc.save(); //save that association
 
-            return res.json(res.user); // Send success response with updated user object
+            return res.json(newAssoc); // Send success response with updated user object
         } else {
             return res.status(409).json({ message: 'School already exists in User' });
         }
@@ -148,18 +147,20 @@ router.patch('/:id/school/:school_id', async (req, res, next) => {
     }
 });
 
-//Updating one
-router.patch('/:id', async (req, res, next) => {
+//Updating one 
+router.patch('/:user_id', async (req, res, next) => {
     await getPositionByName(req, res, next)
 }, async (req, res, next) => {
-    await getUser(req, res, next)
-})
-router.patch('/:id', getUser, async (req, res) => {
+    await getUser(req, res, params = true, next)
+}, async (req, res) => {
     if (req.body.name != null) {
         res.user.name = req.body.name
     }
     if (req.body.password != null) {
         res.user.password = req.body.password
+    }
+    if (req.body.avatar != null) {
+        res.user.avatar = req.body.avatar
     }
     if (req.body.position != null) {
         res.user.position = res.pos
@@ -193,9 +194,8 @@ router.post('/validate', getUserByEmail, async (req, res) => {
 })
 
 //Middleware
-async function getUser(req, res, next) {
-    const userId = req.params.id;
-
+async function getUser(req, res, params = true, next) {
+    const userId = params ? req.params.user_id : req.body.user_id
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ message: 'Invalid user ID format' });
     }
@@ -241,20 +241,6 @@ async function getDuplicatesByEmail(req, res, next) {
     next() //proceeds to the next function
 }
 
-async function getSchoolByName(req, res, next) {
-    let school
-    try {
-        school = await School.findOne({ name: req.body.name })
-        if (school == null)
-            return res.status(404).json({ message: 'Cannot find school with that name' })
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-    //Creates the object user
-    res.school = school;
-    next();
-}
-
 async function getPositionByName(req, res, next) {
     let pos
     try {
@@ -268,8 +254,8 @@ async function getPositionByName(req, res, next) {
     next()
 }
 
-async function getSchool(req, res, next) {
-    const schoolId = req.params.school_id;
+async function getSchool(req, res, params = true, next) {
+    const schoolId = params ? req.params.school_id : req.body.school_id
 
     if (!mongoose.isValidObjectId(schoolId)) {
         return res.status(400).json({ message: 'Invalid user ID format' });

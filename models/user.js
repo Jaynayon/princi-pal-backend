@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
-const association = require('./association')
 
 const userSchema = mongoose.Schema({
     fname: {
@@ -30,8 +29,11 @@ const userSchema = mongoose.Schema({
     },
     position: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Position', //School model
-        //unique: false //Because multiple users can have multiple schools
+        ref: 'Position', //Position model
+    },
+    avatar: {
+        type: String,
+        default: "Blue"
     }
 })
 
