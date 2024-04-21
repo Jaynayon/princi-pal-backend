@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose');
 const router = express.Router()
 const Notifications = require('../models/notification');
 const User = require("../models/user")
@@ -30,7 +31,11 @@ router.get('/:name', getPositionByName, async (req, res) => {
 })*/
 
 //Creating one with a User (default)
-router.post('/', getUser, getAssociation, async (req, res) => {
+router.post('/', async (req, res, next) => {
+    await getUser(req, res, params = false, next)
+}, async (req, res, next) => {
+    await getAssociation(req, res, params = false, next)
+}, async (req, res) => {
     const notif = new Notifications({
         user: res.user,
         assoc: res.assoc,
@@ -53,6 +58,26 @@ router.delete('/:id', getNotification, async (req, res) => {
     try {
         await res.notif.deleteOne()
         res.json({ message: 'Notification removed' })
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//Deleting many Notification by userId
+router.delete('/all/users/:user_id', async (req, res, next) => {
+    await getUser(req, res, params = true, next)
+}, async (req, res) => {
+    const userId = req.params.user_id; // Assuming user_id is provided in the request body
+    try {
+        const result = await Notifications.deleteMany({
+            user: userId// Filter by userId
+        });
+
+        if (result.deletedCount > 0) {
+            res.json({ message: `${result.deletedCount} notification(s) removed` });
+        } else {
+            res.status(404).json({ message: 'No matching notifications found for deletion' });
+        }
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
@@ -103,50 +128,43 @@ async function getNotification(req, res, next) {
     next()
 }
 
-async function getPositionByName(req, res, next) {
-    let pos
-    try {
-        pos = await Position.findOne({ name: req.params.name })
-        if (pos == null)
-            return res.status(404).json({ message: 'Cannot find position' })
-    } catch (err) {
-        res.status(400).json({ message: err.message })
+async function getUser(req, res, params = true, next) {
+    const userId = params ? req.params.user_id : req.body.user_id
+    if (!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
     }
-    res.pos = pos
-    next()
+
+    try {
+        const user = await User.findById(userId);
+        if (user == null) {
+            return res.status(404).json({ message: 'Cannot find user' });
+        }
+        res.user = user; // Attach user object to response
+        next();
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 }
 
-async function getUser(req, res, next) {
-    let user
+async function getAssociation(req, res, params = true, next) {
+    const assocId = params ? req.params.assoc_id : req.body.assoc_id
+    if (!assocId) {
+        return next()
+    }
+    if (!mongoose.isValidObjectId(assocId)) {
+        return res.status(400).json({ message: 'Invalid assoc ID format' });
+    }
+
     try {
-        user = await User.findById(req.body.userId)
-        if (user == null)
-            return res.status(404).json({ message: 'Cannot find user' })
+        const assoc = await Association.findById(assocId);
+        if (assoc == null) {
+            return res.status(404).json({ message: 'Cannot find Association' });
+        }
+        res.assoc = assoc; // Attach user object to response
+        next();
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        res.status(500).json({ message: err.message });
     }
-    res.user = user
-    next()
 }
-
-async function getAssociation(req, res, next) {
-    if (!req.body.assocId) {
-        // If assocId is not provided in the request body, move to the next middleware
-        return next();
-    }
-
-    let assoc
-    try {
-        assoc = await Association.findById(req.body.assocId)
-        if (assoc == null)
-            return res.status(404).json({ message: 'Cannot find School Association' })
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-    res.assoc = assoc
-    next()
-}
-
-
 
 module.exports = router
