@@ -5,6 +5,7 @@ const router = express.Router()
 const User = require('../models/user')
 const Position = require('../models/position')
 const Association = require('../models/association')
+const Notifications = require('../models/notification')
 
 // Getting all users with positions and their associations with schools
 router.get('/', async (req, res) => {
@@ -152,6 +153,10 @@ router.delete('/:user_id', async (req, res, next) => {
     try {
         //Delete user associations
         const result = await Association.deleteMany({
+            user: res.user._id// Filter by userId
+        });
+
+        const notifs = await Notifications.deleteMany({
             user: res.user._id// Filter by userId
         });
 

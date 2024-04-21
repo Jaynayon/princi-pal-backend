@@ -1,7 +1,9 @@
 const express = require('express')
+const mongoose = require('mongoose');
 const router = express.Router()
 const School = require('../models/school')
 const Association = require('../models/association');
+const Notifications = require('../models/notification')
 
 // Getting all schools with associations
 router.get('/', async (req, res) => {
@@ -62,8 +64,23 @@ router.post('/', getDuplicates, async (req, res) => {
 })
 
 //Deleting one along with its associations
-router.delete('/:id', getSchool, async (req, res) => {
+router.delete('/:id', getSchool, getAssociation, async (req, res) => {
+    const associations = res.assoc
     try {
+        // Convert single association object to an array if needed
+        if (!Array.isArray(associations) && associations) {
+            associations = [associations]; // Convert single association to an array
+        }
+
+        // Check if associations exist and are not empty
+        if (associations && associations.length > 0) {
+            // Collect all assoc_ids from associations for filtering notifications
+            const assocIds = associations.map(assoc => assoc._id);
+
+            // Delete notifications associated with the collected assoc_ids
+            const deleteNotificationsResult = await Notifications.deleteMany({ assoc: { $in: assocIds } });
+        }
+
         //Delete user associations
         const result = await Association.deleteMany({
             school: res.school._id// Filter by school id
@@ -117,6 +134,22 @@ async function getSchool(req, res, next) {
     }
     res.school = school
     next()
+}
+
+async function getAssociation(req, res, next) {
+    const schoolId = res.school._id
+
+    if (!mongoose.isValidObjectId(schoolId)) {
+        return res.status(400).json({ message: 'Invalid school ID format' });
+    }
+
+    try {
+        const assoc = await Association.find({ school: schoolId });
+        res.assoc = assoc; // Attach user object to response
+        next();
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 }
 
 module.exports = router
