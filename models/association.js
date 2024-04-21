@@ -4,12 +4,12 @@ const associationsSchema = mongoose.Schema({
     school: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Schools', //School model
-        //unique: false //Because multiple users can have multiple schools
+        required: true,
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users', //Users model
-        //unique: false //Because multiple users can have multiple users
+        required: true,
     },
     approved: {
         type: Boolean,
