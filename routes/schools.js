@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const School = require('../models/school')
-const User = require('../models/user');
 const Association = require('../models/association');
-
 
 // Getting all schools with associations
 router.get('/', async (req, res) => {
@@ -52,10 +50,6 @@ router.get('/', async (req, res) => {
 
 //Creating one
 router.post('/', getDuplicates, async (req, res) => {
-    //Check school name if it exists
-    if (res.school) {
-        return res.status(409).json({ message: 'Duplicate school' })
-    }
     const school = new School({
         name: req.body.name
     })
@@ -67,11 +61,17 @@ router.post('/', getDuplicates, async (req, res) => {
     }
 })
 
-//Deleting one
+//Deleting one along with its associations
 router.delete('/:id', getSchool, async (req, res) => {
     try {
-        await res.school.deleteOne()
-        res.json({ message: 'School removed' })
+        //Delete user associations
+        const result = await Association.deleteMany({
+            school: res.school._id// Filter by school id
+        });
+
+        await res.school.deleteOne() // Delete school
+
+        res.json({ message: `School removed, along with ${result.deletedCount} association(s)` })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
