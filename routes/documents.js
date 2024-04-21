@@ -101,8 +101,37 @@ router.get('/lrs/schools/:year/:month/:keyword', getSchool, async (req, res) => 
     }
 });
 
-//Creating one LR
-router.post('/', getSchool, async (req, res) => {
+//Getting one LR for Dashboard
+router.get('/schools/:year/:month', getSchool, async (req, res) => {
+    try {
+        const document = await Document.findOne({
+            school: res.school._id,
+            year: req.params.year,
+            month: req.params.month
+        }).select('-lr -sds -claimant -head_accounting -__v')
+
+        if (!document) {
+            return res.status(404).json({ message: 'No document found for the specified school, year, and month' });
+        }
+
+        const lrEntries = await LR.find({ document: document._id })
+            .select('-document') //we need the id to be used as keys
+
+        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0); //get the sum on the amount property
+
+        const modifiedDocument = {
+            ...document.toObject(),
+            lr_sum: amountSum
+        }
+        res.send(modifiedDocument)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+
+//Creating one Document
+router.post('/', getSchool, getDocumentDuplicates, async (req, res) => {
     const { month, year, budget, budget_limit, sds, claimant, head_accounting } = req.body;
 
     // Validate required fields
@@ -130,7 +159,7 @@ router.post('/', getSchool, async (req, res) => {
 });
 
 //Deleting one Document
-router.delete('/:id', getDocument, async (req, res) => {
+router.delete('/:id', getDocumentById, async (req, res) => {
     try {
         await res.doc.deleteOne()
         res.json({ message: 'Document removed' })
@@ -140,7 +169,7 @@ router.delete('/:id', getDocument, async (req, res) => {
 })
 
 //Update one Document
-router.patch('/:id', getDocument, async (req, res) => {
+router.patch('/:id', getDocumentById, async (req, res) => {
     if (req.body.budget != null) {
         res.doc.budget = req.body.budget
     }
@@ -169,7 +198,7 @@ router.patch('/:id', getDocument, async (req, res) => {
 
 
 //Middleware
-async function getDocument(req, res, next) {
+async function getDocumentById(req, res, next) {
     let doc
     try {
         doc = await Document.findById(req.params.id)
@@ -179,6 +208,22 @@ async function getDocument(req, res, next) {
         res.status(400).json({ message: err.message })
     }
     res.doc = doc
+    next()
+}
+
+async function getDocumentDuplicates(req, res, next) {
+    let doc
+    try {
+        doc = await Document.findOne({
+            school: res.school._id,
+            year: req.body.year,
+            month: req.body.month
+        }).select('-__v')
+        if (doc)
+            return res.status(404).json({ message: 'Document for this month and year already exists' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
     next()
 }
 
@@ -206,23 +251,6 @@ async function getSchool(req, res, next) {
         next();
     } catch (err) {
         res.status(400).json({ message: err.message });
-    }
-}
-
-async function calculateLRAmountSum(req, res, next) {
-    const documentId = req.params.document_id; // Extract document ID from request parameters
-
-    try {
-        const lrEntries = await LR.find({ document: documentId }); // Find LR entries by document ID
-
-        // Calculate sum of 'amount' property across LR entries
-        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0);
-
-        req.lrAmountSum = amountSum; // Attach calculated sum to request object
-
-        next(); // Proceed to next middleware or route handler
-    } catch (err) {
-        res.status(500).json({ message: err.message });
     }
 }
 
