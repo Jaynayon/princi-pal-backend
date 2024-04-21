@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const documentSchema = mongoose.Schema({
+    school: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Schools', //School model
+    },
     lr: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'LR', // Reference to LR model
