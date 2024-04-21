@@ -15,17 +15,14 @@ router.get('/', async (req, res) => {
     }
 })
 
-/*
-// Getting one
-router.get('/:name', async (req, res, next) => {
-    await getUserByEmail(req, res, next, { params: true });
-}, (req, res) => {
+//Getting one
+router.get('/:id', getAssociationById, async (req, res) => {
     try {
-        res.send(res.user);
+        res.json(res.assoc)
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        res.status(500).json({ message: err.message })
     }
-});*/
+})
 
 // Insert an Association between User and School
 router.post('/user/school', async (req, res, next) => {
@@ -67,8 +64,11 @@ router.delete('/:id', getAssociationById, async (req, res) => {
 
 //Update one
 router.patch('/:id', getAssociationById, async (req, res) => {
-    if (req.body.name != null) {
-        res.pos.name = req.body.name
+    if (req.body.approved != null) {
+        res.assoc.approved = req.body.approved
+    }
+    if (req.body.admin != null) {
+        res.assoc.admin = req.body.admin
     }
     try {
         const newAssoc = await res.assoc.save()
@@ -81,6 +81,11 @@ router.patch('/:id', getAssociationById, async (req, res) => {
 //Middleware
 async function getAssociationById(req, res, next) {
     let assoc
+    const assocId = req.params.id
+    if (!mongoose.isValidObjectId(assocId)) {
+        return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
     try {
         assoc = await Association.findById(req.params.id)
         if (assoc == null)
