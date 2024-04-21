@@ -1,18 +1,19 @@
+### Gets all the Users in the Database
 GET http://localhost:4000/users
-###
 
+### Gets the User with the specified email
 GET http://localhost:4000/users/j.nayon123@gmail.com
-###
 
+### Validates User credentials
 POST http://localhost:4000/users/validate/
 Content-Type: application/json
 
 {
-    "email": "j.nayon1234@gmail.com",
-    "password": "testing"
+    "email": "j.nayon123@gmail.com",
+    "password": "testingnasad"
 }
-###
 
+### Creates a User with specified position
 POST http://localhost:4000/users
 Content-Type: application/json
 
@@ -21,23 +22,21 @@ Content-Type: application/json
     "mname": "testing",
     "lname": "testing",
     "username": "testing",
-    "email": "j.nayon1232@gmail.com",
+    "email": "j.nayon123@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }
-###
 
-DELETE http://localhost:4000/users/66209174f7a709079b211862
+### Delete a User with specified ID
+DELETE http://localhost:4000/users/66243d5b79bd65c9b5288023
 
-###
-PATCH http://localhost:4000/users/661f300c018be135681f3d86
+### Updates User properties. (Patch the only patchable fields: username, password, position, and avatar)
+PATCH http://localhost:4000/users/66243a650fee83b088313546
 Content-Type: application/json
 
 {
-    "name": "bards2",
-    "password": "testing nasad",
-    "position": "ADOF"
+    "fname": "bards2",
+    "password": "testingnasad",
+    "position": "ADOF",
+    "avatar": "Green"
 }
-
-###
-PATCH http://localhost:4000/users/661f9ec778c4b179d54498f7/school/661f31c70260a2d33a970464

@@ -1,0 +1,50 @@
+### By default naka ascending dapat /documents/lr/schools/{year}/{month}
+GET http://localhost:4000/documents/lrs/schools/2024/April
+Content-Type: application/json
+
+{
+    "school_id": "661f31c70260a2d33a970464"
+}
+
+### By default naka ascending dapat /documents/lr/schools/{year}/{month}/{keyword}
+GET http://localhost:4000/documents/lrs/schools/2024/April/test
+Content-Type: application/json
+
+{
+    "school_id": "661f31c70260a2d33a970464"
+}
+
+### This is for dashboard
+GET http://localhost:4000/documents/schools/2024/April
+Content-Type: application/json
+
+{
+    "school_id": "661f31c70260a2d33a970464"
+}
+
+###
+POST http://localhost:4000/documents
+Content-Type: application/json
+
+{
+    "school_id": "661f31cd0260a2d33a970467",
+    "month": "April",
+    "year": "2024",
+    "budget": 2000,
+    "budget_limit": 400,
+    "sds": "ADOF",
+    "claimant": "ADOF",
+    "head_accounting": "ADOF"
+}
+###
+DELETE http://localhost:4000/documents/66239c5c44c699bd885d2d3f
+
+###
+PATCH http://localhost:4000/documents/66239c5c44c699bd885d2d3f
+Content-Type: application/json
+
+{
+    "budget_exceeded": "true"
+}
+
+###

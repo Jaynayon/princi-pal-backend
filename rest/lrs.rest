@@ -5,17 +5,18 @@ POST http://localhost:4000/lrs
 Content-Type: application/json
 
 {
-    "date": "test2",
-    "ors_burs_no": "test2",
-    "particulars": "test2",
-    "amount":560
+    "doc_id": "66239d5e44c699bd885d2d5d",
+    "date": "test3",
+    "ors_burs_no": "test3",
+    "particulars": "test3",
+    "amount": 435.65
 }
 
 ###
-DELETE http://localhost:4000/lrs/6621deb64db421656fc6502d
+DELETE http://localhost:4000/lrs/662222c8436ef1787160fa7d
 
 ###
-PATCH http://localhost:4000/lrs/6621dfc2595f3fb723ceb73a
+PATCH http://localhost:4000/lrs/6621ea4653af5d204bee3783
 Content-Type: application/json
 
 {

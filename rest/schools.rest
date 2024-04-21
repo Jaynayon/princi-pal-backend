@@ -1,6 +1,7 @@
+### Get all the Schools in the database
 GET http://localhost:4000/schools
 
-###
+### Create a new School
 POST http://localhost:4000/schools
 Content-Type: application/json
 
@@ -8,10 +9,10 @@ Content-Type: application/json
     "name": "Testing ES"
 }
 
-###    
+### Delete a School with the specified ID
 DELETE http://localhost:4000/schools/660cd6f4507816b24794b447
 
-###
+### Patch School properties
 PATCH http://localhost:4000/schools/661f31c70260a2d33a970464
 Content-Type: application/json
 
