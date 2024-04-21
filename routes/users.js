@@ -120,33 +120,6 @@ router.post('/', async (req, res, next) => {
     }
 })
 
-// Insert an Association between User and School
-router.post('/school/', async (req, res, next) => {
-    await getUser(req, res, params = false, next); // Get user by ID through body
-}, async (req, res, next) => {
-    await getSchool(req, res, params = false, next); // Get school by school_id
-}, async (req, res, next) => {
-    await getAssociation(req, res, next); // Check if association exists
-}, async (req, res) => {
-    try {
-        if (!res.assoc) {
-            // Create association if it doesn't exist
-            const newAssoc = new Association({
-                user: res.user._id, // Use user ID
-                school: res.school._id // Use school ID
-            });
-
-            await newAssoc.save(); //save that association
-
-            return res.json(newAssoc); // Send success response with updated user object
-        } else {
-            return res.status(409).json({ message: 'School already exists in User' });
-        }
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-});
-
 //Updating one 
 router.patch('/:user_id', async (req, res, next) => {
     await getPositionByName(req, res, next)
@@ -252,39 +225,6 @@ async function getPositionByName(req, res, next) {
     }
     res.pos = pos
     next()
-}
-
-async function getSchool(req, res, params = true, next) {
-    const schoolId = params ? req.params.school_id : req.body.school_id
-
-    if (!mongoose.isValidObjectId(schoolId)) {
-        return res.status(400).json({ message: 'Invalid user ID format' });
-    }
-    try {
-        const school = await School.findById(schoolId);
-        if (!school) {
-            return res.status(404).json({ message: 'Cannot find school' });
-        }
-        res.school = school; // Attach school object to response
-        next();
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
-}
-
-async function getAssociation(req, res, next) {
-    try {
-        const assoc = await Association.findOne({ user: res.user._id, school: res.school._id });
-
-        if (!assoc) {
-            res.assoc = null; // Set res.assoc to null if association doesn't exist
-        } else {
-            res.assoc = assoc; // Attach found association to response
-        }
-        next();
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
 }
 
 module.exports = router
