@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 const router = express.Router()
 const User = require('../models/user')
-const School = require('../models/school')
 const Position = require('../models/position')
 const Association = require('../models/association')
 
@@ -24,7 +23,7 @@ router.get('/', async (req, res) => {
                 .select('-user -__v') // Exclude 'user' and '__v' fields
                 .populate({
                     path: 'school',
-                    select: 'name -_id' // Include only the 'name' field from the 'school' reference
+                    select: '-_id' // Include only the 'name' field from the 'school' reference
                 })
                 .exec();
 
@@ -146,11 +145,19 @@ router.patch('/:user_id', async (req, res, next) => {
     }
 })
 
-//Deleting one
-router.delete('/:id', getUser, async (req, res) => {
+//Deleting one along with its associations
+router.delete('/:user_id', async (req, res, next) => {
+    await getUser(req, res, params = true, next)
+}, async (req, res) => {
     try {
-        await res.user.deleteOne()
-        res.json({ message: 'User removed' })
+        //Delete user associations
+        const result = await Association.deleteMany({
+            user: res.user._id// Filter by userId
+        });
+
+        await res.user.deleteOne() // Delete user
+
+        res.json({ message: `User removed, along with ${result.deletedCount} association(s)` })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
