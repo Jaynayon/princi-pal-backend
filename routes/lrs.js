@@ -37,7 +37,12 @@ router.post('/', getDocument, async (req, res) => {
         amount
     });
     try {
+        //first save the lr to get the entire sum
         const newLR = await lr.save()
+
+        //calculate budget status
+        await calculateBudgetLimitStatus(res)
+
         res.status(201).json(newLR)
     } catch (err) {
         res.status(400).json({ message: err.message })
@@ -45,7 +50,7 @@ router.post('/', getDocument, async (req, res) => {
 })
 
 //Update one
-router.patch('/:id', getLR, async (req, res) => {
+router.patch('/:id', getLR, getDocumentByLr, async (req, res) => {
     if (req.body.date != null) {
         res.lr.date = req.body.date
     }
@@ -60,6 +65,10 @@ router.patch('/:id', getLR, async (req, res) => {
     }
     try {
         const newLr = await res.lr.save()
+
+        //calculate budget status
+        await calculateBudgetLimitStatus(res)
+
         res.json(newLr)
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -67,9 +76,13 @@ router.patch('/:id', getLR, async (req, res) => {
 })
 
 //Deleting one
-router.delete('/:id', getLR, async (req, res) => {
+router.delete('/:id', getLR, getDocumentByLr, async (req, res) => {
     try {
         await res.lr.deleteOne()
+
+        //calculate budget status
+        await calculateBudgetLimitStatus(res)
+
         res.json({ message: 'LR removed' })
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -78,21 +91,6 @@ router.delete('/:id', getLR, async (req, res) => {
 
 
 //Middleware
-async function getDuplicates(req, res, next) {
-    let lr
-    try {
-        lr = await LR.findOne({ name: req.body.name })
-        if (lr) {
-            return res.status(409).json({ message: 'LR already exists' })
-        }
-    } catch (err) {
-        res.status(400).json({ message: err.message })
-    }
-    //Creates the object user
-    res.lr = lr;
-    next()//proceeds to the next function
-}
-
 async function getLR(req, res, next) {
     let lr
     try {
@@ -121,6 +119,45 @@ async function getDocument(req, res, next) {
     }
     res.doc = doc
     next()
+}
+
+async function getDocumentByLr(req, res, next) {
+    let doc
+    const docId = res.lr.document
+    if (!mongoose.isValidObjectId(docId)) {
+        return res.status(400).json({ message: 'Invalid Doc ID format' });
+    }
+    try {
+        doc = await Document.findById(docId)
+        if (doc == null)
+            return res.status(404).json({ message: 'Cannot find Document' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    res.doc = doc
+    next()
+}
+
+async function calculateBudgetLimitStatus(res) {
+    try {
+        const lrEntries = await LR.find({ document: res.doc._id })
+            .select('-document') //we need the id to be used as keys
+
+        //get the sum on the amount property
+        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0);
+
+        // Check if the sum exceeds the budget_limit
+        if (amountSum > res.doc.budget_limit) {
+            res.doc.budget_exceeded = true;
+        } else {
+            res.doc.budget_exceeded = false;
+        }
+
+        const updatedDoc = await res.doc.save()
+    } catch (err) {
+        // Handle any errors
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 }
 
 module.exports = router
