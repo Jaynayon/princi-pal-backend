@@ -67,14 +67,6 @@ const JEVSchema = mongoose.Schema({
             // Automatically cap 'value' at 10000 if it exceeds this limit
             return Math.min(value, 10000);
         }
-    },
-    prepared_by: {
-        type: String,
-        required: false
-    },
-    certified_cor: {
-        type: String,
-        required: false
     }
 });
 

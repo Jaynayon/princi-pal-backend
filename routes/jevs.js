@@ -16,13 +16,13 @@ router.get('/', async (req, res) => {
 
 //Creating one
 router.post('/', getDocument, async (req, res) => {
-    const { doc_id, respo_center, account_explanation, uacs_obj_code, debit, credit, prepared_by, certified_cor } = req.body;
+    const { doc_id, respo_center, account_explanation, uacs_obj_code, debit, credit } = req.body;
 
     // Validate required fields
-    if (!doc_id || !respo_center || !account_explanation || !uacs_obj_code || !prepared_by || !certified_cor ||
+    if (!doc_id || !respo_center || !account_explanation || !uacs_obj_code ||
         debit === undefined || debit === null || credit === undefined || credit === null
     ) {
-        return res.status(400).json({ message: 'docId, espo_center, account_explanation, uacs_obj_code, debit, credit, prepared_by, and certified_cor are required' });
+        return res.status(400).json({ message: 'docId, espo_center, account_explanation, uacs_obj_code, debit, and credit are required' });
     }
 
     // Validate amount fields (debit and credit must be valid numbers)
@@ -37,9 +37,7 @@ router.post('/', getDocument, async (req, res) => {
         account_explanation,
         uacs_obj_code,
         debit,
-        credit,
-        prepared_by,
-        certified_cor
+        credit
     });
     try {
         //first save the lr to get the entire sum
@@ -49,6 +47,84 @@ router.post('/', getDocument, async (req, res) => {
         await calculateBudgetLimitStatus(res)
 
         res.status(201).json(newJEV)
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+})
+
+//Creating one
+router.post('/initialize', getDocument, async (req, res) => {
+    const { doc_id } = req.body;
+
+    // Validate required fields
+    if (!doc_id) {
+        return res.status(400).json({ message: 'docId is required' });
+    }
+
+    // Predefined objects to be added to JEV
+    const predefinedObjects = [
+        {
+            respo_center: '',
+            account_explanation: 'Communication Expenses: Mobile',
+            uacs_obj_code: '5020502001',
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'Electricity Expenses',
+            uacs_obj_code: '5020402000',
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'Internet Subscription Expenses',
+            uacs_obj_code: '5020503000',
+            debit: 0,
+            credit: 0,
+        },
+        {
+            respo_center: '',
+            account_explanation: ' Transpo/Delivery Expenses',
+            uacs_obj_code: '5029904000',
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'Training Expenses',
+            uacs_obj_code: '5020201000',
+            debit: 5000,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'R & M -School Buildings',
+            uacs_obj_code: '5021304002',
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'Other Suplies & Materials Expenses',
+            uacs_obj_code: '5020399000',
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            account_explanation: 'Advances to Operating Expenses',
+            uacs_obj_code: '1990101000',
+            debit: 0,
+            credit: 0
+        }
+    ];
+    try {
+        // Insert predefined objects into JEV collection
+        const insertedJEVs = await JEV.insertMany(predefinedObjects.map(obj => ({ document: res.doc, ...obj })));
+
+        res.status(201).json(insertedJEVs)
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
