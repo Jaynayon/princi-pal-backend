@@ -1,13 +1,18 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const router = express.Router()
+const UACS = require('../models/uacs')
 const JEV = require('../models/jev')
 const Document = require('../models/document')
 
 //Get all JEVs
 router.get('/', async (req, res) => {
     try {
-        const JEVs = await JEV.find();
+        const JEVs = await JEV.find()
+            .populate({
+                path: 'uacs',
+                select: '-_id -__v'
+            });
         res.json(JEVs)
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -65,57 +70,49 @@ router.post('/initialize', getDocument, async (req, res) => {
     const predefinedObjects = [
         {
             respo_center: '',
-            account_explanation: 'Communication Expenses: Mobile',
-            uacs_obj_code: '5020502001',
+            uacs: await UACS.findOne({ uacs_obj_code: "5020502001" }),
             debit: 0,
             credit: 0
         },
         {
             respo_center: '',
-            account_explanation: 'Electricity Expenses',
-            uacs_obj_code: '5020402000',
+            uacs: await UACS.findOne({ uacs_obj_code: "5020402000" }),
             debit: 0,
             credit: 0
         },
         {
             respo_center: '',
-            account_explanation: 'Internet Subscription Expenses',
-            uacs_obj_code: '5020503000',
+            uacs: await UACS.findOne({ uacs_obj_code: "5020503000" }),
             debit: 0,
             credit: 0,
         },
         {
             respo_center: '',
-            account_explanation: ' Transpo/Delivery Expenses',
-            uacs_obj_code: '5029904000',
+            uacs: await UACS.findOne({ uacs_obj_code: "5029904000" }),
             debit: 0,
             credit: 0
         },
         {
             respo_center: '',
-            account_explanation: 'Training Expenses',
-            uacs_obj_code: '5020201000',
-            debit: 5000,
-            credit: 0
-        },
-        {
-            respo_center: '',
-            account_explanation: 'R & M -School Buildings',
-            uacs_obj_code: '5021304002',
+            uacs: await UACS.findOne({ uacs_obj_code: "5020201000" }),
             debit: 0,
             credit: 0
         },
         {
             respo_center: '',
-            account_explanation: 'Other Suplies & Materials Expenses',
-            uacs_obj_code: '5020399000',
+            uacs: await UACS.findOne({ uacs_obj_code: "5021304002" }),
             debit: 0,
             credit: 0
         },
         {
             respo_center: '',
-            account_explanation: 'Advances to Operating Expenses',
-            uacs_obj_code: '1990101000',
+            uacs: await UACS.findOne({ uacs_obj_code: "5020399000" }),
+            debit: 0,
+            credit: 0
+        },
+        {
+            respo_center: '',
+            uacs: await UACS.findOne({ uacs_obj_code: "1990101000" }),
             debit: 0,
             credit: 0
         }

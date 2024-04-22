@@ -37,7 +37,20 @@ const LRSchema = mongoose.Schema({
                 message: 'Amount must be less than or equal to 10000'
             }
         ]
-    }
+    },
+    payee: {
+        type: String,
+        required: false  // Assuming particulars is required
+    },
+    uacs: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UACS', //Documents model,
+        required: true //Needs to be under a UACS 
+    },
+    nature_of_payment: {
+        type: String,
+        required: false  // Assuming particulars is required
+    },
 });
 
 module.exports = mongoose.model('LR', LRSchema);

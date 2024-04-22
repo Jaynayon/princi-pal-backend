@@ -10,13 +10,10 @@ const JEVSchema = mongoose.Schema({
         type: String,
         required: false  // Assuming date is required 
     },
-    account_explanation: {
-        type: String,
-        required: false  // Assuming particulars is required
-    },
-    uacs_obj_code: {
-        type: String,
-        required: false  // Assuming ors_burs_no is required
+    uacs: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UACS', //Documents model,
+        required: true //Needs to be under a UACS 
     },
     debit: {
         type: Number,

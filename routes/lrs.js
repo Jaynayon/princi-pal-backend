@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose');
 const router = express.Router()
 const LR = require('../models/lr')
+const UACS = require('../models/uacs')
 const Document = require('../models/document')
 
 //Get all LRs
@@ -15,12 +16,12 @@ router.get('/', async (req, res) => {
 })
 
 //Creating one
-router.post('/', getDocument, async (req, res) => {
-    const { doc_id, date, ors_burs_no, particulars, amount } = req.body;
+router.post('/', getDocument, getUacs, async (req, res) => {
+    const { doc_id, date, ors_burs_no, particulars, amount, payee, uacs_obj_code, nature_of_payment } = req.body;
 
     // Validate required fields
-    if (!doc_id || !date || !ors_burs_no || !particulars || amount === undefined || amount === null) {
-        return res.status(400).json({ message: 'docId, Date, ORS/BURS number, particulars, and amount are required' });
+    if (!doc_id || !date || !ors_burs_no || !particulars || !payee || !uacs_obj_code || !nature_of_payment || amount === undefined || amount === null) {
+        return res.status(400).json({ message: 'docId, Date, ORS/BURS number, particulars, amount, payee, uacs_obj_code, and nature_of_payment are required' });
     }
 
     // Validate amount field (must be a number)
@@ -34,7 +35,10 @@ router.post('/', getDocument, async (req, res) => {
         date,
         ors_burs_no,
         particulars,
-        amount
+        amount,
+        payee,
+        uacs: res.uacs,
+        nature_of_payment
     });
     try {
         //first save the lr to get the entire sum
@@ -101,6 +105,19 @@ async function getLR(req, res, next) {
         res.status(400).json({ message: err.message })
     }
     res.lr = lr
+    next()
+}
+
+async function getUacs(req, res, next) {
+    let aucs
+    try {
+        aucs = await UACS.findOne({ uacs_obj_code: req.body.uacs_obj_code })
+        if (aucs == null)
+            return res.status(404).json({ message: 'Cannot find Uacs or invalid Uacs code' })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    res.uacs = aucs
     next()
 }
 
