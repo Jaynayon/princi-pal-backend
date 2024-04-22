@@ -5,10 +5,6 @@ const documentSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Schools', //School model
     },
-    lr: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'LR', // Reference to LR model
-    }],
     month: {
         type: String,
         required: true
@@ -29,6 +25,17 @@ const documentSchema = mongoose.Schema({
         }
     },
     budget_limit: {
+        type: Number,
+        required: false,
+        validate: {
+            validator: function (value) {
+                // Validate budget_limit (must be a positive number or null/undefined)
+                return value === undefined || value === null || (typeof value === 'number' && value >= 0 && value <= 999999);
+            },
+            message: 'Budget limit must be a non-negative number or left blank'
+        }
+    },
+    cash_advance: {
         type: Number,
         required: false,
         validate: {

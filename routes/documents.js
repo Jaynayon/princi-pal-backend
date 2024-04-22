@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 const router = express.Router()
 const Document = require('../models/document');
 const LR = require('../models/lr');
+const JEV = require('../models/jev');
 const School = require('../models/school');
 
 /*//Getting all SHOULD NOT BE IMPLEMENTED
 router.get('/', async (req, res) => {
     try {
-        const documents = await Document.find()
+        const documents = await Document.find() 
             .select('-__v')
         const modifiedDocuments = await Promise.all(documents.map(async (doc) => {
             const lrEntries = await LR.find({ document: doc._id })
@@ -28,27 +29,95 @@ router.get('/', async (req, res) => {
     }
 })*/
 
-//Getting one LR
+//Notes: RCDs can be derived from LRs. Therefore, no separate entity for RCD is required.
+//The CDR is the combination of UACs and LRs. Therefore, no separate entity for CDR is required.
+
+//Getting one LR based on a year and month
 router.get('/lrs/schools/:year/:month', getSchool, async (req, res) => {
     try {
         const document = await Document.findOne({
             school: res.school._id,
             year: req.params.year,
             month: req.params.month
-        }).select('-__v')
+        }).select('-jev -rcd -cdr -__v')
 
         if (!document) {
             return res.status(404).json({ message: 'No document found for the specified school, year, and month' });
         }
 
-        const lrEntries = await LR.find({ document: document._id })
-            .select('-document -__v') //we need the id to be used as keys
+        const lrEntries = await LR.find({ document: document._id }) //we need the id to be used as keys. 
+            .select('-document -__v -payee -uacs_obj_code -nature_of_payment')  //And only select required fields for LR
 
-        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0); //get the sum on the amount property
+        //get the sum on the amount property
+        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0);
 
         const modifiedDocument = {
             ...document.toObject(),
             lr: lrEntries,
+            sum: amountSum
+        }
+        res.send(modifiedDocument)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//Getting one RCD based on a year and month
+router.get('/rcds/schools/:year/:month', getSchool, async (req, res) => {
+    try {
+        const document = await Document.findOne({
+            school: res.school._id,
+            year: req.params.year,
+            month: req.params.month
+        }).select('-jev -rcd -cdr -__v')
+
+        if (!document) {
+            return res.status(404).json({ message: 'No document found for the specified school, year, and month' });
+        }
+
+        const lrEntries = await LR.find({ document: document._id }) //we need the id to be used as keys. 
+            .select('-document -__v -particulars')  //And only select required fields for LR
+
+        //get the sum on the amount property
+        const amountSum = lrEntries.reduce((total, lr) => total + lr.amount, 0);
+
+        const modifiedDocument = {
+            ...document.toObject(),
+            lr: lrEntries,
+            sum: amountSum
+        }
+        res.send(modifiedDocument)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+})
+
+//Getting one JEV based on a year and month
+router.get('/jevs/schools/:year/:month', getSchool, async (req, res) => {
+    try {
+        const document = await Document.findOne({
+            school: res.school._id,
+            year: req.params.year,
+            month: req.params.month
+        }).select('-lr -cdr -rcd -__v')
+
+        if (!document) {
+            return res.status(404).json({ message: 'No document found for the specified school, year, and month' });
+        }
+
+        const jevEntries = await JEV.find({ document: document._id })
+            .populate({
+                path: 'uacs',
+                select: '-_id -__v'
+            })
+            .select('-document -__v') //we need the id to be used as keys
+
+        //get the sum on the amount property
+        const amountSum = jevEntries.reduce((total, jev) => total + jev.credit + jev.debit, 0);
+
+        const modifiedDocument = {
+            ...document.toObject(),
+            jev: jevEntries,
             sum: amountSum
         }
         res.send(modifiedDocument)
@@ -132,11 +201,11 @@ router.get('/schools/:year/:month', getSchool, async (req, res) => {
 
 //Creating one Document
 router.post('/', getSchool, getDocumentDuplicates, async (req, res) => {
-    const { month, year, budget, budget_limit, sds, claimant, head_accounting } = req.body;
+    const { month, year, budget, budget_limit, cash_advance, sds, claimant, head_accounting } = req.body;
 
     // Validate required fields
-    if (!month || !year || !budget || !budget_limit || !sds || !claimant || !head_accounting) {
-        return res.status(400).json({ message: 'Month, year, budget, budget_limit, SDS, claimant, and head_accounting are required' });
+    if (!month || !year || !budget || !budget_limit || !cash_advance || !sds || !claimant || !head_accounting) {
+        return res.status(400).json({ message: 'Month, year, budget, budget_limit, cash_advance, SDS, claimant, and head_accounting are required' });
     }
 
     // Create a new document
@@ -146,6 +215,7 @@ router.post('/', getSchool, getDocumentDuplicates, async (req, res) => {
         year,
         budget,
         budget_limit,
+        cash_advance,
         sds,
         claimant,
         head_accounting
@@ -178,6 +248,9 @@ router.patch('/:id', getDocumentById, async (req, res) => {
     }
     if (req.body.budget_exceeded != null) {
         res.doc.budget_exceeded = req.body.budget_exceeded
+    }
+    if (req.body.cash_advance != null) {
+        res.doc.cash_advance = req.body.cash_advance
     }
     if (req.body.sds != null) {
         res.doc.sds = req.body.sds
