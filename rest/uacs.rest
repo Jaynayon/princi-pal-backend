@@ -1,0 +1,24 @@
+GET http://localhost:4000/uacs
+
+### CASE SENSITIVE
+//GET http://localhost:4000/positions/Principal
+
+###
+POST http://localhost:4000/uacs
+Content-Type: application/json
+
+{
+    "account_explanation": "Advances to Operating Expensess",
+    "uacs_obj_code": "1990101000"
+}
+
+###
+DELETE http://localhost:4000/uacs/6625d6cefe318cb694d674ee
+
+###
+PATCH http://localhost:4000/uacs/6625d6cefe318cb694d674ee
+Content-Type: application/json
+
+{
+    "account_explanation": "Advances to Operating Expensesss"
+}
