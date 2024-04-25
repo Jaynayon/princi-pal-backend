@@ -29,7 +29,7 @@ const userSchema = mongoose.Schema({
     },
     position: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Position', //Position model
+        ref: 'Position', //Position model 
     },
     avatar: {
         type: String,

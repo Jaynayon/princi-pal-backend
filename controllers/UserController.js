@@ -1,9 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
-const router = express.Router()
-const User = require('../models/user')
-const Position = require('../models/position')
+const User = require('../models/User')
+const Position = require('../models/Position')
 const Association = require('../models/association')
 const Notifications = require('../models/notification')
 
@@ -24,7 +23,7 @@ async function getAllUsers(req, res) {
                 .select('-user -__v') // Exclude 'user' and '__v' fields
                 .populate({
                     path: 'school',
-                    select: '-_id' // Include only the 'name' field from the 'school' reference
+                    select: '-_id' // Include only the 'name' field from the 'school' reference 
                 })
                 .exec();
 
