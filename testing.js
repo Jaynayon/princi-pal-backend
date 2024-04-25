@@ -2,6 +2,8 @@ console.log('testing check')
 var XLSX = require("xlsx");
 var workbook = XLSX.readFile("templates/file_temp.xlsx");
 let worksheet = workbook.Sheets[workbook.SheetNames[0]];
+const LR = require('./models/lr')
+const Document = require('./models/document')
 const XlsxPopulate = require('xlsx-populate');
 //Use needed models to fetch data
 
@@ -13,8 +15,31 @@ const data = { //set of data to insert
     amount: 3124
 }
 
-const dataToWrite = Array(40).fill(data) //duplicate data
+//const dataToWrite = Array(40).fill(data) //duplicate data
 const schoolName = 'Jaclupan' //for file naming
+
+// Define an async function to use await
+const processData = async () => {
+    try {
+        // Fetch the document based on criteria (assuming findOne returns a single document)
+        const document = await Document.findOne({ school: "661f31c70260a2d33a970464", year: 2024, month: "April" });
+
+        // Fetch LR data related to the fetched document
+        const dataToWrite = await LR.find({ document: document._id })
+            .select('-document -__v -payee -uacs_obj_code -nature_of_payment'); // Only select required fields for LR
+
+        console.log(dataToWrite);
+
+        // Call the function to insert LR data into Excel
+        const schoolName = 'Jaclupan'; // For file naming
+        insertLRData(dataToWrite, schoolName);
+    } catch (error) {
+        console.error('Error processing data:', error);
+    }
+};
+
+processData()
+
 
 //NOTE: Validation occurs in the route, if data is 0, the it is validated in the route
 //Dagdag feature kay if ever daghan ang data dapat automatic mo create og new sheet referencing the sum from the previous sheet
