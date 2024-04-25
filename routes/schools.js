@@ -49,6 +49,50 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Getting all schools with associations
+router.get('/:name', getSchoolByName, async (req, res) => {
+    try {
+        const school = await School.findById(res.school._id).select('-users'); // Exclude the 'users' field
+
+        // Find associations for the current school
+        const associations = await Association.find({ school: school._id })
+            .select('-school -_id -__v')
+            .populate({
+                path: 'user',
+                select: '-password -_id -__v',
+                populate: {
+                    path: 'position',
+                    select: '-_id -__v'
+                }
+            });
+
+        const formattedUsers = associations.map(association => ({
+            fname: association.user.fname,
+            mname: association.user.mname,
+            lname: association.user.lname,
+            username: association.user.username,
+            email: association.user.email,
+            position: association.user.position ? association.user.position.name : null,
+            approved: association.approved,
+            invitation: association.invitation,
+            admin: association.admin
+        }));
+
+        // Create a modified school object with the users
+        const modifiedSchool = {
+            ...school.toObject(), // Convert Mongoose document to plain JavaScript object
+            users: formattedUsers
+        };
+
+
+        res.json(modifiedSchool);
+    } catch (err) {
+        console.error(err); // Log the error for debugging
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
 
 //Creating one
 router.post('/', getDuplicates, async (req, res) => {
@@ -114,6 +158,21 @@ async function getDuplicates(req, res, next) {
         school = await School.findOne({ name: req.body.name })
         if (school) {
             return res.status(409).json({ message: 'School already exists' })
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+    //Creates the object user
+    res.school = school;
+    next()//proceeds to the next function
+}
+
+async function getSchoolByName(req, res, next) {
+    let school
+    try {
+        school = await School.findOne({ name: req.params.name })
+        if (!school) {
+            return res.status(404).json({ message: 'School doesnt exists' })
         }
     } catch (err) {
         res.status(400).json({ message: err.message })
