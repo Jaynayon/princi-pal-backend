@@ -2,7 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose');
 const router = express.Router()
 const Notifications = require('../models/notification');
-const User = require("../models/user")
+const User = require("../models/User")
 const Association = require("../models/association")
 
 //Getting all
