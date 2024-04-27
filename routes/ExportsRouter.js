@@ -11,7 +11,7 @@ const workbook = XLSX.readFile(filePath);
 
 const LR = require('../models/lr')
 const Document = require('../models/document')
-const School = require('../models/school');
+const School = require('../models/School');
 
 //Getting all
 //Getting one LR based on a year and month

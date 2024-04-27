@@ -4,7 +4,7 @@ const router = express.Router()
 const Document = require('../models/document');
 const LR = require('../models/lr');
 const JEV = require('../models/jev');
-const School = require('../models/school');
+const School = require('../models/School');
 
 /*//Getting all SHOULD NOT BE IMPLEMENTED
 router.get('/', async (req, res) => {
