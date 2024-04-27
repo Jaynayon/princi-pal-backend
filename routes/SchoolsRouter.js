@@ -2,8 +2,8 @@ const express = require('express')
 const mongoose = require('mongoose');
 const router = express.Router()
 const School = require('../models/School')
-const Association = require('../models/association');
-const Notifications = require('../models/notification')
+const Association = require('../models/Association');
+const Notifications = require('../models/Notification')
 const SchoolController = require('../controllers/SchoolController')
 
 // Getting all schools with associations

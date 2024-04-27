@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 const User = require('../models/User')
 const Position = require('../models/Position')
-const Association = require('../models/association')
-const Notifications = require('../models/notification')
+const Association = require('../models/Association')
+const Notifications = require('../models/Notification')
 
 // Getting all users with positions and their associations with schools
 async function getAllUsers(req, res) {

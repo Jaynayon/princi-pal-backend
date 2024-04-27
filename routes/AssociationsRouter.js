@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router()
 const User = require('../models/User')
 const School = require('../models/School')
-const Association = require('../models/association');
+const Association = require('../models/Association')
 
 //Getting all
 router.get('/', async (req, res) => {
