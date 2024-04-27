@@ -2,25 +2,22 @@
 GET http://localhost:4000/associations
 
 ### Gets an Association by ID
-GET http://localhost:4000/associations/66245ead3434b9414a6f4367
+GET http://localhost:4000/associations/662d5ae820a752475b6188f6s
 
-### Create an association between User and School
-//Invitation = true, User applies to School
-//Invitation = false, School invites User (default)
-POST http://localhost:4000/associations/user/school
+### Create an association between User and School /invite and /apply
+POST http://localhost:4000/associations/user/school/apply
 Content-Type: application/json
 
 {
-    "user_id": "66243a650fee83b088313546",
-    "school_id": "661f31c70260a2d33a970464",
-    "invitation": true
+    "user_id": "662d64b6a92ce851c3a291e9",
+    "school_id": "6629798e05999fbb5ea6764d"
 }
 
 ### Deletes an Association with the specified ID
-DELETE http://localhost:4000/associations/66245e9e3434b9414a6f435e
+DELETE http://localhost:4000/associations/662d65b31d955d0d1998face
 
 ### Patches the approved and admin properties of an Association
-PATCH http://localhost:4000/associations/66245ead3434b9414a6f4367
+PATCH http://localhost:4000/associations/662d66114f0ccac941049ebf
 Content-Type: application/json
 
 {

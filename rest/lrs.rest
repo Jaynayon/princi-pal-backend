@@ -5,23 +5,23 @@ POST http://localhost:4000/lrs
 Content-Type: application/json
 
 {
-    "doc_id": "66239d5e44c699bd885d2d5d",
-    "date": "test3",
-    "ors_burs_no": "test3",
-    "particulars": "test3",
-    "amount": 435.65
+    "doc_id": "662620cf8ab30c2f2cb3e24b",
+    "date": "test4",
+    "ors_burs_no": "test4",
+    "particulars": "test4",
+    "amount": 69.69,
+    "payee": "gaisano",
+    "uacs_obj_code": "1990101000",
+    "nature_of_payment": "cash"
 }
 
 ###
-DELETE http://localhost:4000/lrs/662222c8436ef1787160fa7d
+DELETE http://localhost:4000/lrs/6624f654ad59e1b645455d96
 
 ###
-PATCH http://localhost:4000/lrs/6621ea4653af5d204bee3783
+PATCH http://localhost:4000/lrs/6624f2072997e9b054e26b9b
 Content-Type: application/json
 
 {
-    "date": "test21",
-    "ors_burs_no": "test2",
-    "particulars": "test2",
-    "amount":5604
+    "amount":200
 }

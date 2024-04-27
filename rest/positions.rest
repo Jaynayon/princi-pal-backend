@@ -1,23 +1,23 @@
 GET http://localhost:4000/positions
 
 ### CASE SENSITIVE
-GET http://localhost:4000/positions/Principal
+GET http://localhost:4000/positions/Principals
 
 ###
 POST http://localhost:4000/positions
 Content-Type: application/json
 
 {
-    "name": "ADOF"
+    "name": "Accountant"
 }
 
 ###
 DELETE http://localhost:4000/positions/6618b9a72c2af3cb6d27d87b
 
 ###
-PATCH http://localhost:4000/positions/6618ba1dcd4848227911dd7f
+PATCH http://localhost:4000/positions/662ae06417d6ec13b7903bb0
 Content-Type: application/json
 
 {
-    "name": "ADOF"
+    "name": "Broker"
 }

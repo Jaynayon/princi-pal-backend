@@ -1,0 +1,7 @@
+### By default naka ascending dapat /documents/lr/schools/{year}/{month}
+GET http://localhost:4000/exports/lrs/schools/2024/April
+Content-Type: application/json
+
+{
+    "school_id": "661f31c70260a2d33a970464"
+}

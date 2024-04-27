@@ -1,7 +1,7 @@
 ### Gets all the Users in the Database
 GET http://localhost:4000/users
 
-### Gets the User with the specified email
+### Gets the User with the specified email 
 GET http://localhost:4000/users/j.nayon123@gmail.com
 
 ### Validates User credentials
@@ -9,8 +9,8 @@ POST http://localhost:4000/users/validate/
 Content-Type: application/json
 
 {
-    "email": "j.nayon123@gmail.com",
-    "password": "testingnasad"
+    "email": "testuser@gmail.com",
+    "password": "!Welcome1"
 }
 
 ### Creates a User with specified position
@@ -21,22 +21,20 @@ Content-Type: application/json
     "fname": "testing",
     "mname": "testing",
     "lname": "testing",
-    "username": "testing",
-    "email": "j.nayon123@gmail.com",
+    "username": "testing1",
+    "email": "testuser@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }
 
 ### Delete a User with specified ID
-DELETE http://localhost:4000/users/66243d5b79bd65c9b5288023
+DELETE http://localhost:4000/users/662d62ece05a289b3e95fcb1
 
 ### Updates User properties. (Patch the only patchable fields: username, password, position, and avatar)
-PATCH http://localhost:4000/users/66243a650fee83b088313546
+PATCH http://localhost:4000/users/662ae2aa7e3f4f9cf12f5936
 Content-Type: application/json
 
 {
-    "fname": "bards2",
-    "password": "testingnasad",
-    "position": "ADOF",
-    "avatar": "Green"
+    "password": "!Welcome12",
+    "position": "ADAS"
 }

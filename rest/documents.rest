@@ -14,7 +14,7 @@ Content-Type: application/json
     "school_id": "661f31c70260a2d33a970464"
 }
 
-### This is for dashboard
+### Dashboard: Gets the sum of all documents and necessary proprties
 GET http://localhost:4000/documents/schools/2024/April
 Content-Type: application/json
 
@@ -22,29 +22,31 @@ Content-Type: application/json
     "school_id": "661f31c70260a2d33a970464"
 }
 
-###
+### Creates a Document under a specified School, Year, and Month (required fields)
+// The rest of the fields/properties are optional
 POST http://localhost:4000/documents
 Content-Type: application/json
 
 {
-    "school_id": "661f31cd0260a2d33a970467",
+    "school_id": "661f31c70260a2d33a970464",
     "month": "April",
     "year": "2024",
     "budget": 2000,
     "budget_limit": 400,
+    "cash_advance": 10000,
     "sds": "ADOF",
     "claimant": "ADOF",
     "head_accounting": "ADOF"
 }
-###
-DELETE http://localhost:4000/documents/66239c5c44c699bd885d2d3f
 
-###
-PATCH http://localhost:4000/documents/66239c5c44c699bd885d2d3f
+### Deletes a Document by its specified ID
+DELETE http://localhost:4000/documents/6624f5e3ad59e1b645455d7d
+
+### Updates a Document by its ID
+// Fields that can be updated: budget, budget_limit, budget_exceeded, sds, claimant, head_accounting
+PATCH http://localhost:4000/documents/6624f62dad59e1b645455d88
 Content-Type: application/json
 
 {
-    "budget_exceeded": "true"
+    "budget_limit": 200
 }
-
-###

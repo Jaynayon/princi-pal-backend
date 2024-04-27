@@ -6,18 +6,19 @@ POST http://localhost:4000/notifications
 Content-Type: application/json
 
 {
-    "user_id": "66243a650fee83b088313546",
-    "details": "Testing details"
+    "user_id": "662a3b0e68f0aa3215411411",
+    "assoc_id": "662d5ae820a752475b6188f5",
+    "details": "Testing details assoc1"
 }
 
 ### Deletes a Single Notification
-DELETE http://localhost:4000/notifications/6624434af31ef28a942c8367
+DELETE http://localhost:4000/notifications/662d5d61d6b4362fbb2e7422
 
-### Deletes a Single Notification
-DELETE http://localhost:4000/notifications/all/users/66243a650fee83b088313546
+### Deletes a All Notifications from a User
+DELETE http://localhost:4000/notifications/all/users/662a3b0e68f0aa3215411411
 
 ### Patches the details and isRead properties of a Notification
-PATCH http://localhost:4000/notifications/662443cef31ef28a942c837c
+PATCH http://localhost:4000/notifications/662d5d61d6b4362fbb2e7422
 Content-Type: application/json
 
 {
