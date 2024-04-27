@@ -12,11 +12,19 @@ router.get('/:id',
 );
 
 // Insert an Association between User and School
-router.post('/user/school',
+router.post('/user/school/apply',
     AssociationController.getUser,
     AssociationController.getSchool,
     AssociationController.getAssociation,
-    AssociationController.createAssociation
+    AssociationController.createAssociationApply
+);
+
+// Insert an Association between User and School
+router.post('/user/school/invite',
+    AssociationController.getUser,
+    AssociationController.getSchool,
+    AssociationController.getAssociation,
+    AssociationController.createAssociationInvite
 );
 
 //Deleting one

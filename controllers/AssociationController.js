@@ -25,14 +25,34 @@ async function getOneAssociation(req, res) {
 }
 
 // Insert an Association between User and School
-async function createAssociation(req, res) {
+async function createAssociationApply(req, res) {
     try {
         if (!res.assoc) {
             // Create association if it doesn't exist
             const newAssoc = new Association({
                 user: res.user._id, // Use user ID
                 school: res.school._id, // Use school ID
-                invitation: req.body.invitation != null ? req.body.invitation : false
+            });
+
+            await newAssoc.save(); //save that association
+
+            return res.json(newAssoc); // Send success response with updated user object
+        } else {
+            return res.status(409).json({ message: 'Association already exists in User' });
+        }
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+}
+
+async function createAssociationInvite(req, res) {
+    try {
+        if (!res.assoc) {
+            // Create association if it doesn't exist
+            const newAssoc = new Association({
+                user: res.user._id, // Use user ID
+                school: res.school._id, // Use school ID
+                invitation: true
             });
 
             await newAssoc.save(); //save that association
@@ -147,7 +167,8 @@ async function getAssociation(req, res, next) {
 module.exports = {
     getAllAssociations,
     getOneAssociation,
-    createAssociation,
+    createAssociationApply,
+    createAssociationInvite,
     deleteAssociation,
     patchAssociation,
     getAssociationById,
