@@ -14,7 +14,7 @@ app.use(express.json())
 // Allow requests from specific origin (e.g., http://localhost:3000)
 app.use(cors({
     origin: 'http://localhost:3000',
-    //methods: ['GET', 'POST'], // Allow only specific HTTP methods if needed
+    //methods: ['GET', 'POST'], // Allow only specific HTTP methods if needed 
 }));
 
 const usersRouter = require('./routes/UsersRouter')
