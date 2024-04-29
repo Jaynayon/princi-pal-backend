@@ -8,6 +8,17 @@ router.get('/', UserController.getAllUsers);
 // Getting one user by email
 router.get('/:email', UserController.getOneUserByEmail);
 
+// Getting one user by email
+router.get('/exists/:details', UserController.getExistingEmailUsername);
+
+// Getting existing 
+router.post('/',
+    UserController.getDuplicatesByEmail,
+    UserController.getDuplicatesByUsername,
+    UserController.getPositionByName,
+    UserController.createUser
+);
+
 // Insert one User with designated Position
 router.post('/',
     UserController.getPositionByName,
