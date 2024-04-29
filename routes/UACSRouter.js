@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const UACS = require('../models/uacs');
+const UACS = require('../models/UACS');
 
 //Getting all
 router.get('/', async (req, res) => {

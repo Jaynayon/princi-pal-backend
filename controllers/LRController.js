@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const LR = require('../models/lr')
-const UACS = require('../models/uacs')
+const UACS = require('../models/UACS')
 const Document = require('../models/document')
 
 //Get all LRs
