@@ -1,7 +1,7 @@
-GET http://localhost:4000/jevs
+GET http://localhost:4000/jev
 
 ### Initialized the JEV and inserts the template records
-POST http://localhost:4000/jevs/initialize
+POST http://localhost:4000/jev/initialize
 Content-Type: application/json
 
 {
@@ -9,23 +9,26 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:4000/jevs
+POST http://localhost:4000/jev
 Content-Type: application/json
 
 {
-    "doc_id": "662567cdceed3e8f95b08bc0",
+    "doc_id": "662620cf8ab30c2f2cb3e24b",
     "respo_center": "test", 
     "account_explanation": "test", 
-    "uacs_obj_code": "test", 
+    "uacs_obj_code": "5029904000", 
     "debit": 0, 
     "credit": 200
 }
 
 ###
-DELETE http://localhost:4000/jevs/66256a3d85170adeafa31c6b
+DELETE http://localhost:4000/jev/66256a3d85170adeafa31c6b
 
 ###
-PATCH http://localhost:4000/jevs/662568cdaa4772a2f2556cb3
+DELETE http://localhost:4000/jev/document/662620cf8ab30c2f2cb3e24b
+
+###
+PATCH http://localhost:4000/jev/662568cdaa4772a2f2556cb3
 Content-Type: application/json
 
 {

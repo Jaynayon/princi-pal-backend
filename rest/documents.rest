@@ -1,5 +1,5 @@
 ### By default naka ascending dapat /documents/lr/schools/{year}/{month}
-GET http://localhost:4000/documents/lrs/schools/2024/April
+GET http://localhost:4000/documents/lr/schools/2024/April
 Content-Type: application/json
 
 {
@@ -7,7 +7,7 @@ Content-Type: application/json
 }
 
 ### By default naka ascending dapat /documents/lr/schools/{year}/{month}/{keyword}
-GET http://localhost:4000/documents/lrs/schools/2024/April/test
+GET http://localhost:4000/documents/lr/schools/2024/April/test
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 {
     "school_id": "661f31c70260a2d33a970464",
-    "month": "April",
+    "month": "February",
     "year": "2024",
     "budget": 2000,
     "budget_limit": 400,
@@ -40,13 +40,13 @@ Content-Type: application/json
 }
 
 ### Deletes a Document by its specified ID
-DELETE http://localhost:4000/documents/6624f5e3ad59e1b645455d7d
+DELETE http://localhost:4000/documents/662fdcc944ae2d36597fcf32
 
 ### Updates a Document by its ID
 // Fields that can be updated: budget, budget_limit, budget_exceeded, sds, claimant, head_accounting
-PATCH http://localhost:4000/documents/6624f62dad59e1b645455d88
+PATCH http://localhost:4000/documents/662fdcc944ae2d36597fcf32
 Content-Type: application/json
 
 {
-    "budget_limit": 200
+    "budget_limit": 700
 }

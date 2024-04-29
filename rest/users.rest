@@ -4,6 +4,9 @@ GET http://localhost:4000/users
 ### Gets the User with the specified email 
 GET http://localhost:4000/users/j.nayon123@gmail.com
 
+### Gets the User with the specified email or username
+GET http://localhost:4000/users/exists/testing1s
+
 ### Validates User credentials
 POST http://localhost:4000/users/validate/
 Content-Type: application/json
@@ -21,14 +24,14 @@ Content-Type: application/json
     "fname": "testing",
     "mname": "testing",
     "lname": "testing",
-    "username": "testing1",
-    "email": "testuser@gmail.com",
+    "username": "testing12",
+    "email": "testuser2@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }
 
 ### Delete a User with specified ID
-DELETE http://localhost:4000/users/662d62ece05a289b3e95fcb1
+DELETE http://localhost:4000/users/662eed9365b4f9877768da46
 
 ### Updates User properties. (Patch the only patchable fields: username, password, position, and avatar)
 PATCH http://localhost:4000/users/662ae2aa7e3f4f9cf12f5936

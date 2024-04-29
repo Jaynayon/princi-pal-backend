@@ -1,7 +1,7 @@
-GET http://localhost:4000/lrs
+GET http://localhost:4000/lr
 
 ###
-POST http://localhost:4000/lrs
+POST http://localhost:4000/lr
 Content-Type: application/json
 
 {
@@ -9,17 +9,17 @@ Content-Type: application/json
     "date": "test4",
     "ors_burs_no": "test4",
     "particulars": "test4",
-    "amount": 69.69,
+    "amount": 70.69,
     "payee": "gaisano",
     "uacs_obj_code": "1990101000",
     "nature_of_payment": "cash"
 }
 
 ###
-DELETE http://localhost:4000/lrs/6624f654ad59e1b645455d96
+DELETE http://localhost:4000/lr/662fe01d7463816d76e796ba
 
 ###
-PATCH http://localhost:4000/lrs/6624f2072997e9b054e26b9b
+PATCH http://localhost:4000/lr/662fe01d7463816d76e796ba
 Content-Type: application/json
 
 {
