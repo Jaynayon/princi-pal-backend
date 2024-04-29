@@ -157,10 +157,26 @@ async function deleteUser(req, res, next) {
     }
 }
 
+// Validate user credentials
 async function validateUser(req, res, next) {
     try {
         const isMatch = await bcrypt.compare(req.body.password, res.user.password);
         res.json({ isMatch });
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
+async function getExistingEmailUsername(req, res) {
+    try {
+        let exists = false
+        const user = await User.findOne({
+            $or: [
+                { email: req.params.details },
+                { username: req.params.details }
+            ]
+        })
+        user ? res.json({ exists: true }) : res.json({ exists })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
@@ -266,6 +282,7 @@ module.exports = {
     getPositionByName,
     getDuplicatesByEmail,
     getDuplicatesByUsername,
+    getExistingEmailUsername,
     validateUser,
     createUser,
     getUser,
