@@ -1,5 +1,5 @@
 ### By default naka ascending dapat /documents/lr/schools/{year}/{month}
-GET http://localhost:4000/documents/lr/schools/2024/April
+GET http://localhost:4000/documents/jev/schools/2024/April
 Content-Type: application/json
 
 {

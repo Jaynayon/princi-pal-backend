@@ -22,15 +22,15 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:4000/jev/66256a3d85170adeafa31c6b
+DELETE http://localhost:4000/jev/662ffd89fe3245add8644afa
 
 ###
 DELETE http://localhost:4000/jev/document/662620cf8ab30c2f2cb3e24b
 
 ###
-PATCH http://localhost:4000/jev/662568cdaa4772a2f2556cb3
+PATCH http://localhost:4000/jev/662ffd89fe3245add8644afb
 Content-Type: application/json
 
 {
-    "credit":300
+    "credit":200
 }
