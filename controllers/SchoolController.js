@@ -1,6 +1,4 @@
-const express = require('express')
 const mongoose = require('mongoose');
-const router = express.Router()
 const School = require('../models/School')
 const Association = require('../models/Association');
 const Notifications = require('../models/Notification')
