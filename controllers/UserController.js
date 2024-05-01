@@ -52,6 +52,50 @@ async function getAllUsers(req, res) {
     }
 }
 
+// Getting one user by id
+async function getOneUserById(req, res) {
+    try {
+        const user = await User.findById(req.body.user_id)
+            .select('-__v')
+            .populate({
+                path: 'position',
+                select: '-__v'
+            })
+            .exec()
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Find associations (schools) for the current user
+        const associations = await Association.find({ user: user._id, approved: true })
+            .select('-user -_id -__v') // Exclude 'user' and '__v' fields
+            .populate({
+                path: 'school',
+                select: 'name -_id' // Include only the 'name' field from the 'school' reference
+            })
+            .exec();
+
+        // Extract position name from user.position or set to null if user.position is null
+        const positionName = user.position ? user.position.name : null;
+
+        // Modify the response data to include the extracted position name
+        const modifiedUser = {
+            ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+            position: positionName, // Replace position object with position name
+            schools: associations.map(association => ({
+                name: association.school.name,
+                approved: association.approved,
+                invitation: association.invitation,
+                admin: association.admin
+            }))
+        };
+
+        res.send(modifiedUser);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
 // Getting one user by email
 async function getOneUserByEmail(req, res) {
     try {
@@ -292,6 +336,7 @@ async function getPositionByName(req, res, next) {
 module.exports = {
     getAllUsers,
     getOneUserByEmail,
+    getOneUserById,
     getUserByEmail,
     getPositionByName,
     getDuplicatesByEmail,

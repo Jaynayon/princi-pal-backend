@@ -4,6 +4,14 @@ GET http://localhost:4000/users
 ### Gets the User with the specified email 
 GET http://localhost:4000/users/j.nayon123@gmail.com
 
+### Validates User credentials
+GET http://localhost:4000/users/id/
+Content-Type: application/json
+
+{
+    "user_id": "6631c4458fd7087532995ccd"
+}
+
 ### Gets the User with the specified email or username
 GET http://localhost:4000/users/exists/testing1s
 

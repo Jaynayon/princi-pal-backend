@@ -5,6 +5,12 @@ const UserController = require('../controllers/UserController')
 // Getting all users with positions and their associations with schools
 router.get('/', UserController.getAllUsers);
 
+// Getting a user with position and their association/s with schools
+router.get('/id/',
+    UserController.getUser,
+    UserController.getOneUserById
+);
+
 // Getting one user by email
 router.get('/:email', UserController.getOneUserByEmail);
 
