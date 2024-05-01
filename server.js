@@ -4,6 +4,7 @@ const express = require('express')
 const cors = require('cors');
 const app = express()
 const mongoose = require('mongoose')
+const cookieParser = require('cookie-parser')
 
 mongoose.connect(process.env.DATABASE_URL)
 const db = mongoose.connection
@@ -14,8 +15,10 @@ app.use(express.json())
 // Allow requests from specific origin (e.g., http://localhost:3000)
 app.use(cors({
     origin: 'http://localhost:3000',
+    credentials: true // Allow cookies to be sent back and forth
     //methods: ['GET', 'POST'], // Allow only specific HTTP methods if needed 
 }));
+app.use(cookieParser())
 
 const usersRouter = require('./routes/UsersRouter')
 const schoolsRouter = require('./routes/SchoolsRouter')
