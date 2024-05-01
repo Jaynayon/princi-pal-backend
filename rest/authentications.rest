@@ -1,0 +1,2 @@
+### Gets all the Users in the Database
+POST http://localhost:4000/authenticate/verify/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MzFjMDBiMzQ2ZWJjNWUyOTQ2ZjI5MCIsImlhdCI6MTcxNDUzNjQ2MCwiZXhwIjoxNzE0Nzk1NjYwfQ.6DeQPDievz7VydoRrM4xVaouzH1n57rZ8rg7vQc_IWw

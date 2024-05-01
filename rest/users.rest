@@ -24,14 +24,14 @@ Content-Type: application/json
     "fname": "testing",
     "mname": "testing",
     "lname": "testing",
-    "username": "testing12",
-    "email": "testuser2@gmail.com",
+    "username": "testing2",
+    "email": "testing2@gmail.com",
     "password": "testing",
     "position": "ADAS"
 }
 
 ### Delete a User with specified ID
-DELETE http://localhost:4000/users/662eed9365b4f9877768da46
+DELETE http://localhost:4000/users/6631c2bcbbab592297bbb380
 
 ### Updates User properties. (Patch the only patchable fields: username, password, position, and avatar)
 PATCH http://localhost:4000/users/662ae2aa7e3f4f9cf12f5936
