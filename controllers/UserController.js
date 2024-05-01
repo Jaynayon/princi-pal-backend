@@ -55,7 +55,7 @@ async function getAllUsers(req, res) {
 // Getting one user by id
 async function getOneUserById(req, res) {
     try {
-        const user = await User.findById(req.body.user_id)
+        const user = await User.findById(req.params.user_id)
             .select('-__v')
             .populate({
                 path: 'position',

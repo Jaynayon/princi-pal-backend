@@ -11,8 +11,11 @@ router.get('/id/',
     UserController.getOneUserById
 );
 
-// Getting one user by email
-router.get('/:email', UserController.getOneUserByEmail);
+// Getting one user by id
+router.get('/:user_id',
+    UserController.getUser,
+    UserController.getOneUserById
+);
 
 // Getting one user by email
 router.get('/exists/:details', UserController.getExistingEmailUsername);

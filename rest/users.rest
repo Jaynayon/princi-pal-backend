@@ -1,8 +1,8 @@
 ### Gets all the Users in the Database
 GET http://localhost:4000/users
 
-### Gets the User with the specified email 
-GET http://localhost:4000/users/j.nayon123@gmail.com
+### Gets the User with the specified id 
+GET http://localhost:4000/users/6631c4458fd7087532995ccd
 
 ### Validates User credentials
 GET http://localhost:4000/users/id/
