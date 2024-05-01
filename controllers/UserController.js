@@ -5,6 +5,7 @@ const User = require('../models/User')
 const Position = require('../models/Position')
 const Association = require('../models/Association')
 const Notifications = require('../models/Notification')
+const jwt = require('jsonwebtoken')
 
 // Getting all users with positions and their associations with schools
 async function getAllUsers(req, res) {
@@ -111,10 +112,20 @@ async function createUser(req, res, next) {
         });
 
         const newUser = await user.save();
-        res.status(201).json(newUser);
+        const token = createToken(newUser._id)
+        res.cookie('jwt', token, { maxAge: maxAge * 1000, sameSite: 'Lax', secure: false })
+        res.status(201).json({ user: newUser._id })
+        //res.status(201).json(newUser);
     } catch (err) {
         next(err); // Pass the error to the next error-handling middleware
     }
+}
+
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({ id }, 'principal secret', {
+        expiresIn: maxAge
+    })
 }
 
 async function patchUser(req, res, next) {
@@ -161,6 +172,9 @@ async function deleteUser(req, res, next) {
 async function validateUser(req, res, next) {
     try {
         const isMatch = await bcrypt.compare(req.body.password, res.user.password);
+        const token = createToken(res.user._id)
+        res.cookie('jwt', token, { maxAge: maxAge * 1000, sameSite: 'Lax', secure: false })
+        //res.status(201).json({ user: newUser._id })
         res.json({ isMatch });
     } catch (err) {
         res.status(500).json({ message: err.message })
