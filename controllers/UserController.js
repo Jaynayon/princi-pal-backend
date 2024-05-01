@@ -20,7 +20,7 @@ async function getAllUsers(req, res) {
 
         const modifiedUsers = await Promise.all(users.map(async (user) => {
             // Find associations (schools) for the current user
-            const associations = await Association.find({ user: user._id })
+            const associations = await Association.find({ user: user._id, approved: true })
                 .select('-user -__v') // Exclude 'user' and '__v' fields
                 .populate({
                     path: 'school',
@@ -67,7 +67,7 @@ async function getOneUserByEmail(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
         // Find associations (schools) for the current user
-        const associations = await Association.find({ user: user._id })
+        const associations = await Association.find({ user: user._id, approved: true })
             .select('-user -_id -__v') // Exclude 'user' and '__v' fields
             .populate({
                 path: 'school',
